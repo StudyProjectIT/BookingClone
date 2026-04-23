@@ -1,0 +1,42 @@
+# ========================
+# .NET / Backend
+# ========================
+bin/
+obj/
+*.user
+.vs/
+*.suo
+*.ntvs*
+*.njsproj
+
+# Serilog / app logs
+logs/
+*.log
+
+# User secrets & local overrides
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+
+# ========================
+# Environment / Secrets
+# ========================
+.env
+.env.local
+.env.*.local
+
+# ========================
+# OS
+# ========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========================
+# IDE
+# ========================
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json

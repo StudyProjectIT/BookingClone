@@ -1,0 +1,31 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio cache / options
+.vs/
+
+# Publish output
+publish/
+**/Properties/PublishProfiles/
+
+# NuGet
+*.nupkg
+*.snupkg
+project.lock.json
+packages/
+!**/[Pp]ackages/build/
+
+# Serilog / app logs
+logs/
+*.log
+
+# Local appsettings overrides (may contain secrets)
+appsettings.Local.json
+appsettings.*.Local.json
