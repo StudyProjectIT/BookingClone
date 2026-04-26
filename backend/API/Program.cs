@@ -14,6 +14,7 @@ Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(new ConfigurationBuilder()
         .AddJsonFile("appsettings.json")
         .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+        .AddJsonFile("appsettings.Local.json", optional: true)
         .AddEnvironmentVariables()
         .Build())
     .Enrich.FromLogContext()
@@ -24,6 +25,7 @@ try
     Log.Information("Starting BookingClone API");
 
     var builder = WebApplication.CreateBuilder(args);
+    builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
     builder.Host.UseSerilog();
 
     // Database
