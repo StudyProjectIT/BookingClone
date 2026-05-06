@@ -1,14 +1,15 @@
-using System.Text;
-using Infrastructure.Data;
-using Infrastructure.Identity;
-using Infrastructure.Repositories;
 using Core.Interfaces;
+using Core.Services;
+using Infrastructure.Data;
+using Infrastructure.Identity;  
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(new ConfigurationBuilder()
@@ -69,6 +70,8 @@ try
     // Repositories
     builder.Services.AddScoped<IHotelRepository, HotelRepository>();
     builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+    builder.Services.AddScoped<IHotelService, HotelService>();
+    builder.Services.AddScoped<IBookingService, BookingService>();
 
     // API
     builder.Services.AddControllers();
