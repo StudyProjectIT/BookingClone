@@ -1,12 +1,24 @@
 using Core.Entities;
 using Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
+using System.Reflection.Emit;
 
 namespace Infrastructure.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options)
-    : IdentityDbContext<AppUser>(options)
+    : IdentityDbContext<
+        AppUser,
+        AppRole,
+        long,
+        IdentityUserClaim<long>,
+        AppUserRole,
+        IdentityUserLogin<long>,
+        IdentityRoleClaim<long>,
+        IdentityUserToken<long>
+    >(options)
 {
     public DbSet<Hotel> Hotels => Set<Hotel>();
     public DbSet<Booking> Bookings => Set<Booking>();
@@ -14,6 +26,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         builder.Entity<Hotel>(e =>
         {
