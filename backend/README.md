@@ -28,6 +28,7 @@ dotnet user-secrets set "Jwt:Key" "super-secret-key-minimum-32-characters!!"
 
 ```bash
 cd backend
+dotnet ef migrations add AddIdentityMigration --project Infrastructure --startup-project API
 dotnet ef database update --project Infrastructure --startup-project API
 ```
 
