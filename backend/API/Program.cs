@@ -1,8 +1,12 @@
 using Core.Interfaces;
-using Core.Services;
+//using Core.Services;
 using Infrastructure.Data;
-using Infrastructure.Identity;  
-using Infrastructure.Repositories;
+using Infrastructure.Identity;
+using Infrastructure.Interfaces;
+using Infrastructure.Services;
+
+
+//using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,13 +41,18 @@ try
         ));
 
     // Identity
-    builder.Services.AddIdentityCore<AppUser>(options =>
-    {
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireUppercase = false;
-        options.User.RequireUniqueEmail = true;
-    })
-    .AddEntityFrameworkStores<AppDbContext>();
+    builder.Services
+        .AddIdentity<AppUser, AppRole>(options => {
+            options.Stores.MaxLengthForKeys = 128;
+
+            options.Password.RequiredLength = 8;
+            options.Password.RequireDigit = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
+        })
+        .AddEntityFrameworkStores<AppDbContext>()
+        .AddDefaultTokenProviders();
 
     // JWT Authentication
     var jwtKey = builder.Configuration["Jwt:Key"]
@@ -68,10 +77,13 @@ try
     builder.Services.AddAuthorization();
 
     // Repositories
-    builder.Services.AddScoped<IHotelRepository, HotelRepository>();
-    builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-    builder.Services.AddScoped<IHotelService, HotelService>();
-    builder.Services.AddScoped<IBookingService, BookingService>();
+    //builder.Services.AddScoped<IHotelRepository, HotelRepository>();
+    //builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+    //builder.Services.AddScoped<IHotelService, HotelService>();
+    //builder.Services.AddScoped<IBookingService, BookingService>();
+
+    builder.Services.AddTransient<IDbInicializer, DbInitializer>();
+    builder.Services.AddTransient<IScopeCoveredDbInicializer, ScopeCoveredDbInicializer>();
 
     // API
     builder.Services.AddControllers();
@@ -101,6 +113,9 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+
+    await app.Services.GetRequiredService<IScopeCoveredDbInicializer>().InitializeAsync();
+
 
     app.Run();
 }
