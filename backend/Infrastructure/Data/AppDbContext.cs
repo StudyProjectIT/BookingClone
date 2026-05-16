@@ -1,4 +1,5 @@
 using Core.Entities;
+using Infrastructure.Entities;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -22,6 +23,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 {
     public DbSet<Hotel> Hotels => Set<Hotel>();
     public DbSet<Booking> Bookings => Set<Booking>();
+
+    public DbSet<Country> Countries { get; set; } = null!;
+    public DbSet<City> Cities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
