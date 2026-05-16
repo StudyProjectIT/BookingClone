@@ -1,8 +1,8 @@
 using Core.Interfaces;
-using Core.Services;
+//using Core.Services;
 using Infrastructure.Data;
 using Infrastructure.Identity;  
-using Infrastructure.Repositories;
+//using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -68,10 +68,10 @@ try
     builder.Services.AddAuthorization();
 
     // Repositories
-    builder.Services.AddScoped<IHotelRepository, HotelRepository>();
-    builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-    builder.Services.AddScoped<IHotelService, HotelService>();
-    builder.Services.AddScoped<IBookingService, BookingService>();
+    //builder.Services.AddScoped<IHotelRepository, HotelRepository>();
+    //builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+    //builder.Services.AddScoped<IHotelService, HotelService>();
+    //builder.Services.AddScoped<IBookingService, BookingService>();
 
     // API
     builder.Services.AddControllers();

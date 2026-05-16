@@ -22,72 +22,249 @@ namespace Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Core.Entities.Booking", b =>
+            modelBuilder.Entity("Infrastructure.Entities.Address", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ApartmentNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<long>("CityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("Floor")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CheckIn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CheckOut")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Guests")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("HotelId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("UserId")
+                    b.Property<string>("HouseNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HotelId");
+                    b.HasIndex("CityId");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Addresses", (string)null);
                 });
 
-            modelBuilder.Entity("Core.Entities.Hotel", b =>
+            modelBuilder.Entity("Infrastructure.Entities.BankCard", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("CustomerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Cvv")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<DateOnly>("ExpirationDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<string>("OwnerFullName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("BankCards", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.BedInfo", b =>
+                {
+                    b.Property<long>("RoomVariantId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("DoubleBedCount")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("MaxGuests")
+                    b.Property<int>("ExtraBedCount")
                         .HasColumnType("integer");
+
+                    b.Property<int>("KingsizeBedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SingleBedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SofaCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("RoomVariantId");
+
+                    b.ToTable("BedInfos", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Booking", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("AmountToPay")
+                        .HasColumnType("numeric");
+
+                    b.Property<long?>("BankCardId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateOnly>("DateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("DateTo")
+                        .HasColumnType("date");
+
+                    b.Property<DateTimeOffset>("EstimatedTimeOfArrivalUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PersonalWishes")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BankCardId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Bookings", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.BookingBedSelection", b =>
+                {
+                    b.Property<long>("BookingRoomVariantId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDoubleBed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsExtraBed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsKingsizeBed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSingleBed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSofa")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("BookingRoomVariantId");
+
+                    b.ToTable("BookingBedSelections", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.BookingRoomVariant", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BookingId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("RoomVariantId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("RoomVariantId");
+
+                    b.ToTable("BookingRoomVariants", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Breakfast", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("PricePerNight")
-                        .HasColumnType("decimal(10,2)");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Hotels");
+                    b.ToTable("Breakfasts", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Chat", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RealtorId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("CustomerId", "RealtorId");
+
+                    b.HasIndex("RealtorId");
+
+                    b.ToTable("Chats", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Citizenship", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Citizenships", (string)null);
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.City", b =>
@@ -145,6 +322,491 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Countries", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.FavoriteHotel", b =>
+                {
+                    b.Property<long>("HotelId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("HotelId", "CustomerId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("FavoriteHotels", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Gender", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Genders", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.GuestInfo", b =>
+                {
+                    b.Property<long>("RoomVariantId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("AdultCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChildCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("RoomVariantId");
+
+                    b.ToTable("GuestInfos", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Hotel", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AddressId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("ArrivalTimeUtcFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ArrivalTimeUtcTo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DepartureTimeUtcFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DepartureTimeUtcTo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<long>("HotelCategoryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<long>("RealtorId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId")
+                        .IsUnique();
+
+                    b.HasIndex("HotelCategoryId");
+
+                    b.HasIndex("RealtorId");
+
+                    b.ToTable("Hotels", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelAmenity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HotelAmenities", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelBreakfast", b =>
+                {
+                    b.Property<long>("HotelId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("BreakfastId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("HotelId", "BreakfastId");
+
+                    b.HasIndex("BreakfastId");
+
+                    b.ToTable("HotelBreakfasts", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelCategory", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HotelCategories", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelHotelAmenity", b =>
+                {
+                    b.Property<long>("HotelId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("HotelAmenityId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("HotelId", "HotelAmenityId");
+
+                    b.HasIndex("HotelAmenityId");
+
+                    b.ToTable("HotelHotelAmenities", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelPhoto", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("HotelId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HotelId");
+
+                    b.ToTable("HotelPhotos", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelReview", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BookingId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<double?>("Score")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
+                    b.ToTable("HotelReviews", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelStaffLanguage", b =>
+                {
+                    b.Property<long>("HotelId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("LanguageId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("HotelId", "LanguageId");
+
+                    b.HasIndex("LanguageId");
+
+                    b.ToTable("HotelStaffLanguages", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Language", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Languages", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Message", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AuthorId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ChatId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("ChatId");
+
+                    b.ToTable("Messages", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RealtorReview", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AuthorId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<long>("RealtorId")
+                        .HasColumnType("bigint");
+
+                    b.Property<double?>("Score")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("RealtorId");
+
+                    b.ToTable("RealtorReviews", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RentalPeriod", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RentalPeriods", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Room", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<double>("Area")
+                        .HasColumnType("double precision");
+
+                    b.Property<long>("HotelId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int>("NumberOfRooms")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("RoomTypeId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HotelId");
+
+                    b.HasIndex("RoomTypeId");
+
+                    b.ToTable("Rooms", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RoomAmenity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RoomAmenities", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RoomRentalPeriod", b =>
+                {
+                    b.Property<long>("RoomId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RentalPeriodId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("RoomId", "RentalPeriodId");
+
+                    b.HasIndex("RentalPeriodId");
+
+                    b.ToTable("RoomRentalPeriods", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RoomRoomAmenity", b =>
+                {
+                    b.Property<long>("RoomId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RoomAmenityId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("RoomId", "RoomAmenityId");
+
+                    b.HasIndex("RoomAmenityId");
+
+                    b.ToTable("RoomRoomAmenities", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RoomType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RoomTypes", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RoomVariant", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal?>("DiscountPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<long>("RoomId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("RoomVariants", (string)null);
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.AppRole", b =>
@@ -363,15 +1025,170 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Core.Entities.Booking", b =>
+            modelBuilder.Entity("Infrastructure.Identity.Admin", b =>
                 {
-                    b.HasOne("Core.Entities.Hotel", "Hotel")
-                        .WithMany("Bookings")
-                        .HasForeignKey("HotelId")
+                    b.HasBaseType("Infrastructure.Identity.AppUser");
+
+                    b.ToTable("Admins", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Identity.Customer", b =>
+                {
+                    b.HasBaseType("Infrastructure.Identity.AppUser");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<long?>("CitizenshipId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("CityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date");
+
+                    b.Property<long?>("GenderId")
+                        .HasColumnType("bigint");
+
+                    b.HasIndex("CitizenshipId");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("GenderId");
+
+                    b.ToTable("Customers", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Identity.Realtor", b =>
+                {
+                    b.HasBaseType("Infrastructure.Identity.AppUser");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<long?>("CitizenshipId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("CityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<long?>("GenderId")
+                        .HasColumnType("bigint");
+
+                    b.HasIndex("CitizenshipId");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("GenderId");
+
+                    b.ToTable("Realtors", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Address", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.City", "City")
+                        .WithMany("Addresses")
+                        .HasForeignKey("CityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Hotel");
+                    b.Navigation("City");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.BankCard", b =>
+                {
+                    b.HasOne("Infrastructure.Identity.Customer", "Customer")
+                        .WithMany("BankCards")
+                        .HasForeignKey("CustomerId");
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.BedInfo", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.RoomVariant", "RoomVariant")
+                        .WithOne("BedInfo")
+                        .HasForeignKey("Infrastructure.Entities.BedInfo", "RoomVariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RoomVariant");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Booking", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.BankCard", "BankCard")
+                        .WithMany("Bookings")
+                        .HasForeignKey("BankCardId");
+
+                    b.HasOne("Infrastructure.Identity.Customer", "Customer")
+                        .WithMany("Bookings")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BankCard");
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.BookingBedSelection", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.BookingRoomVariant", "BookingRoomVariant")
+                        .WithOne("BookingBedSelection")
+                        .HasForeignKey("Infrastructure.Entities.BookingBedSelection", "BookingRoomVariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BookingRoomVariant");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.BookingRoomVariant", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.Booking", "Booking")
+                        .WithMany("BookingRoomVariants")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Entities.RoomVariant", "RoomVariant")
+                        .WithMany("BookingRoomVariants")
+                        .HasForeignKey("RoomVariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("RoomVariant");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Chat", b =>
+                {
+                    b.HasOne("Infrastructure.Identity.Customer", "Customer")
+                        .WithMany("Chats")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Identity.Realtor", "Realtor")
+                        .WithMany("Chats")
+                        .HasForeignKey("RealtorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Realtor");
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.City", b =>
@@ -383,6 +1200,244 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Country");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.FavoriteHotel", b =>
+                {
+                    b.HasOne("Infrastructure.Identity.Customer", null)
+                        .WithMany("FavoriteHotels")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Entities.Hotel", null)
+                        .WithMany("FavoriteHotels")
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.GuestInfo", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.RoomVariant", "RoomVariant")
+                        .WithOne("GuestInfo")
+                        .HasForeignKey("Infrastructure.Entities.GuestInfo", "RoomVariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RoomVariant");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Hotel", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.Address", "Address")
+                        .WithOne("Hotel")
+                        .HasForeignKey("Infrastructure.Entities.Hotel", "AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Entities.HotelCategory", "HotelCategory")
+                        .WithMany("Hotels")
+                        .HasForeignKey("HotelCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Identity.Realtor", "Realtor")
+                        .WithMany("Hotels")
+                        .HasForeignKey("RealtorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
+
+                    b.Navigation("HotelCategory");
+
+                    b.Navigation("Realtor");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelBreakfast", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.Breakfast", "Breakfast")
+                        .WithMany("HotelBreakfasts")
+                        .HasForeignKey("BreakfastId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Entities.Hotel", "Hotel")
+                        .WithMany("HotelBreakfasts")
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Breakfast");
+
+                    b.Navigation("Hotel");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelHotelAmenity", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.HotelAmenity", "HotelAmenity")
+                        .WithMany("HotelHotelAmenities")
+                        .HasForeignKey("HotelAmenityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Entities.Hotel", "Hotel")
+                        .WithMany("HotelHotelAmenities")
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+
+                    b.Navigation("HotelAmenity");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelPhoto", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.Hotel", "Hotel")
+                        .WithMany("Photos")
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelReview", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.Booking", "Booking")
+                        .WithOne("HotelReview")
+                        .HasForeignKey("Infrastructure.Entities.HotelReview", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelStaffLanguage", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.Hotel", "Hotel")
+                        .WithMany("HotelStaffLanguages")
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Entities.Language", "Language")
+                        .WithMany("HotelStaffLanguages")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+
+                    b.Navigation("Language");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Message", b =>
+                {
+                    b.HasOne("Infrastructure.Identity.AppUser", "Author")
+                        .WithMany("Messages")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Entities.Chat", "Chat")
+                        .WithMany("Messages")
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Chat");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RealtorReview", b =>
+                {
+                    b.HasOne("Infrastructure.Identity.Customer", "Author")
+                        .WithMany("RealtorReviews")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Identity.Realtor", "Realtor")
+                        .WithMany("Reviews")
+                        .HasForeignKey("RealtorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Realtor");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Room", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.Hotel", "Hotel")
+                        .WithMany("Rooms")
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Entities.RoomType", "RoomType")
+                        .WithMany("Rooms")
+                        .HasForeignKey("RoomTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+
+                    b.Navigation("RoomType");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RoomRentalPeriod", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.RentalPeriod", "RentalPeriod")
+                        .WithMany("RoomRentalPeriods")
+                        .HasForeignKey("RentalPeriodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Entities.Room", "Room")
+                        .WithMany("RoomRentalPeriods")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RentalPeriod");
+
+                    b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RoomRoomAmenity", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.RoomAmenity", "RoomAmenity")
+                        .WithMany("RoomRoomAmenities")
+                        .HasForeignKey("RoomAmenityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Infrastructure.Entities.Room", "Room")
+                        .WithMany("RoomRoomAmenities")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Room");
+
+                    b.Navigation("RoomAmenity");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RoomVariant", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.Room", "Room")
+                        .WithMany("RoomVariants")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.AppUserRole", b =>
@@ -440,14 +1495,185 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Core.Entities.Hotel", b =>
+            modelBuilder.Entity("Infrastructure.Identity.Admin", b =>
+                {
+                    b.HasOne("Infrastructure.Identity.AppUser", null)
+                        .WithOne()
+                        .HasForeignKey("Infrastructure.Identity.Admin", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Infrastructure.Identity.Customer", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.Citizenship", "Citizenship")
+                        .WithMany()
+                        .HasForeignKey("CitizenshipId");
+
+                    b.HasOne("Infrastructure.Entities.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId");
+
+                    b.HasOne("Infrastructure.Entities.Gender", "Gender")
+                        .WithMany()
+                        .HasForeignKey("GenderId");
+
+                    b.HasOne("Infrastructure.Identity.AppUser", null)
+                        .WithOne()
+                        .HasForeignKey("Infrastructure.Identity.Customer", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Citizenship");
+
+                    b.Navigation("City");
+
+                    b.Navigation("Gender");
+                });
+
+            modelBuilder.Entity("Infrastructure.Identity.Realtor", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.Citizenship", "Citizenship")
+                        .WithMany("Realtors")
+                        .HasForeignKey("CitizenshipId");
+
+                    b.HasOne("Infrastructure.Entities.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId");
+
+                    b.HasOne("Infrastructure.Entities.Gender", "Gender")
+                        .WithMany("Realtors")
+                        .HasForeignKey("GenderId");
+
+                    b.HasOne("Infrastructure.Identity.AppUser", null)
+                        .WithOne()
+                        .HasForeignKey("Infrastructure.Identity.Realtor", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Citizenship");
+
+                    b.Navigation("City");
+
+                    b.Navigation("Gender");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Address", b =>
+                {
+                    b.Navigation("Hotel");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.BankCard", b =>
                 {
                     b.Navigation("Bookings");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Booking", b =>
+                {
+                    b.Navigation("BookingRoomVariants");
+
+                    b.Navigation("HotelReview");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.BookingRoomVariant", b =>
+                {
+                    b.Navigation("BookingBedSelection")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Breakfast", b =>
+                {
+                    b.Navigation("HotelBreakfasts");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Chat", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Citizenship", b =>
+                {
+                    b.Navigation("Realtors");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.City", b =>
+                {
+                    b.Navigation("Addresses");
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.Country", b =>
                 {
                     b.Navigation("Cities");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Gender", b =>
+                {
+                    b.Navigation("Realtors");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Hotel", b =>
+                {
+                    b.Navigation("FavoriteHotels");
+
+                    b.Navigation("HotelBreakfasts");
+
+                    b.Navigation("HotelHotelAmenities");
+
+                    b.Navigation("HotelStaffLanguages");
+
+                    b.Navigation("Photos");
+
+                    b.Navigation("Rooms");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelAmenity", b =>
+                {
+                    b.Navigation("HotelHotelAmenities");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.HotelCategory", b =>
+                {
+                    b.Navigation("Hotels");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Language", b =>
+                {
+                    b.Navigation("HotelStaffLanguages");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RentalPeriod", b =>
+                {
+                    b.Navigation("RoomRentalPeriods");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Room", b =>
+                {
+                    b.Navigation("RoomRentalPeriods");
+
+                    b.Navigation("RoomRoomAmenities");
+
+                    b.Navigation("RoomVariants");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RoomAmenity", b =>
+                {
+                    b.Navigation("RoomRoomAmenities");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RoomType", b =>
+                {
+                    b.Navigation("Rooms");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.RoomVariant", b =>
+                {
+                    b.Navigation("BedInfo")
+                        .IsRequired();
+
+                    b.Navigation("BookingRoomVariants");
+
+                    b.Navigation("GuestInfo")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.AppRole", b =>
@@ -457,7 +1683,31 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.Identity.AppUser", b =>
                 {
+                    b.Navigation("Messages");
+
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("Infrastructure.Identity.Customer", b =>
+                {
+                    b.Navigation("BankCards");
+
+                    b.Navigation("Bookings");
+
+                    b.Navigation("Chats");
+
+                    b.Navigation("FavoriteHotels");
+
+                    b.Navigation("RealtorReviews");
+                });
+
+            modelBuilder.Entity("Infrastructure.Identity.Realtor", b =>
+                {
+                    b.Navigation("Chats");
+
+                    b.Navigation("Hotels");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }
