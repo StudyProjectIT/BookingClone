@@ -1,4 +1,4 @@
-﻿using Infrastructure.Interfaces;
+﻿using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Services;
