@@ -1,16 +1,8 @@
-using Core.Interfaces;
-//using Core.Services;
-using Infrastructure.Data;
-using Infrastructure.Identity;
-using Infrastructure.Interfaces;
-using Infrastructure.Services;
-
-
-//using Infrastructure.Repositories;
+using API.Middleware;
+using Application;
+using Domain.Interfaces;
+using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
@@ -33,26 +25,9 @@ try
     builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
     builder.Host.UseSerilog();
 
-    // Database
-    builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseNpgsql(
-            builder.Configuration.GetConnectionString("DefaultConnection"),
-            npgsql => npgsql.EnableRetryOnFailure()
-        ));
-
-    // Identity
-    builder.Services
-        .AddIdentity<AppUser, AppRole>(options => {
-            options.Stores.MaxLengthForKeys = 128;
-
-            options.Password.RequiredLength = 8;
-            options.Password.RequireDigit = false;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequireUppercase = false;
-            options.Password.RequireLowercase = false;
-        })
-        .AddEntityFrameworkStores<AppDbContext>()
-        .AddDefaultTokenProviders();
+    // Composition root — layered DI
+    builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddApplication();
 
     // JWT Authentication
     var jwtKey = builder.Configuration["Jwt:Key"]
@@ -76,16 +51,6 @@ try
 
     builder.Services.AddAuthorization();
 
-    // Repositories
-    //builder.Services.AddScoped<IHotelRepository, HotelRepository>();
-    //builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-    //builder.Services.AddScoped<IHotelService, HotelService>();
-    //builder.Services.AddScoped<IBookingService, BookingService>();
-
-    builder.Services.AddTransient<IDbInicializer, DbInitializer>();
-    builder.Services.AddTransient<IScopeCoveredDbInicializer, ScopeCoveredDbInicializer>();
-
-    // API
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -107,6 +72,7 @@ try
         app.UseSwaggerUI();
     }
 
+    app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     app.UseSerilogRequestLogging();
     app.UseCors("FrontendPolicy");
     app.UseHttpsRedirection();
@@ -115,7 +81,6 @@ try
     app.MapControllers();
 
     await app.Services.GetRequiredService<IScopeCoveredDbInicializer>().InitializeAsync();
-
 
     app.Run();
 }
@@ -127,4 +92,3 @@ finally
 {
     Log.CloseAndFlush();
 }
-

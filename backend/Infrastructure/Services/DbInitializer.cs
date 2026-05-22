@@ -1,7 +1,7 @@
-﻿using Infrastructure.Constants;
+﻿using Domain.Constants;
 using Infrastructure.Data;
-using Infrastructure.Identity;
-using Infrastructure.Interfaces;
+using Domain.Entities.Identity;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
