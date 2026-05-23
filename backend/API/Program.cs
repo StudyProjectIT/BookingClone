@@ -1,5 +1,6 @@
 using API.Middleware;
 using Application;
+using Application.Features.Auth.Commands.Register;
 using Domain.Interfaces;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -62,6 +63,11 @@ try
             policy.WithOrigins(builder.Configuration["Frontend:Url"] ?? "http://localhost:5173")
                   .AllowAnyHeader()
                   .AllowAnyMethod());
+    });
+
+    // MediatR
+    builder.Services.AddMediatR(cfg => {
+        cfg.RegisterServicesFromAssembly(typeof(RegisterCommand).Assembly);
     });
 
     var app = builder.Build();
