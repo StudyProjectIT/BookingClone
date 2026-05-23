@@ -1,0 +1,61 @@
+﻿using Application.DTOs.Auth;
+using Application.Interfaces;
+using Domain.Common;
+using Domain.Constants;
+using Domain.Entities.Identity;
+using MediatR;
+using Microsoft.AspNetCore.Identity;
+
+namespace Application.Features.Auth.Commands.Register;
+
+public class RegisterHandler(UserManager<AppUser> userManager,
+    SignInManager<AppUser> signInManager,
+    ITokenService tokenService) : IRequestHandler<RegisterCommand, Result<AuthResponseDto>>
+{
+    public async Task<Result<AuthResponseDto>> Handle(RegisterCommand request, 
+        CancellationToken cancellationToken)
+    {
+        var dto = request.dto;
+        if (await userManager.FindByEmailAsync(dto.Email) is not null)
+            return Error.Conflict("Email is already taken.");
+
+        if (await userManager.FindByNameAsync(dto.UserName) is not null)
+            return Error.Conflict("Username is already taken.");
+
+        var user = new Customer
+        {
+            Email = dto.Email,
+            UserName = dto.UserName,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            Photo = "default.jpg"
+        };
+
+        var createResult = await userManager.CreateAsync(user, dto.Password);
+        if (!createResult.Succeeded)
+            return Error.Validation(string.Join("; ", createResult.Errors.Select(e => e.Description)));
+
+        var roleResult = await userManager.AddToRoleAsync(user, Roles.Customer);
+        if (!roleResult.Succeeded)
+            return Error.Unexpected(string.Join("; ", roleResult.Errors.Select(e => e.Description)));
+
+        var roles = await userManager.GetRolesAsync(user);
+        var (token, expiresAt) = tokenService.CreateToken(user, roles);
+
+        var userDto = new UserDto
+        {
+            Id = user.Id,
+            UserName = user.UserName ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Roles = roles
+        };
+        return new AuthResponseDto
+        {
+            Token = token,
+            ExpiresAt = expiresAt,
+            User = userDto
+        };
+    }
+}
