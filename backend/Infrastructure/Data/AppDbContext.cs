@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Domain.Entities.Identity;
+using RefreshToken = Domain.Entities.Identity.RefreshToken;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 {
     //public DbSet<Hotel> Hotels => Set<Hotel>();
     //public DbSet<Booking> Bookings => Set<Booking>();
+
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
     public DbSet<Customer> Customers { get; set; } = null!;
     public DbSet<Realtor> Realtors { get; set; } = null!;

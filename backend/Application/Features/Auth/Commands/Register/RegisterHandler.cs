@@ -1,21 +1,24 @@
-﻿using Application.DTOs.Auth;
+using Application.DTOs.Auth;
 using Application.Interfaces;
 using Domain.Common;
 using Domain.Constants;
 using Domain.Entities.Identity;
+using Domain.Interfaces;
+using RefreshTokenEntity = Domain.Entities.Identity.RefreshToken;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace Application.Features.Auth.Commands.Register;
 
-public class RegisterHandler(UserManager<AppUser> userManager,
-    SignInManager<AppUser> signInManager,
-    ITokenService tokenService) : IRequestHandler<RegisterCommand, Result<AuthResponseDto>>
+public class RegisterHandler(
+    UserManager<AppUser> userManager,
+    ITokenService tokenService,
+    IRefreshTokenRepository refreshTokenRepository) : IRequestHandler<RegisterCommand, Result<AuthResponseDto>>
 {
-    public async Task<Result<AuthResponseDto>> Handle(RegisterCommand request, 
-        CancellationToken cancellationToken)
+    public async Task<Result<AuthResponseDto>> Handle(RegisterCommand request, CancellationToken ct)
     {
         var dto = request.dto;
+
         if (await userManager.FindByEmailAsync(dto.Email) is not null)
             return Error.Conflict("Email is already taken.");
 
@@ -41,21 +44,30 @@ public class RegisterHandler(UserManager<AppUser> userManager,
 
         var roles = await userManager.GetRolesAsync(user);
         var (token, expiresAt) = tokenService.CreateToken(user, roles);
+        var refreshTokenValue = tokenService.GenerateRefreshToken();
 
-        var userDto = new UserDto
+        await refreshTokenRepository.AddAsync(new RefreshTokenEntity
         {
-            Id = user.Id,
-            UserName = user.UserName ?? string.Empty,
-            Email = user.Email ?? string.Empty,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Roles = roles
-        };
+            Token = refreshTokenValue,
+            UserId = user.Id,
+            CreatedAt = DateTimeOffset.UtcNow,
+            ExpiresAt = DateTimeOffset.UtcNow.AddDays(30)
+        }, ct);
+
         return new AuthResponseDto
         {
             Token = token,
             ExpiresAt = expiresAt,
-            User = userDto
+            RefreshToken = refreshTokenValue,
+            User = new UserDto
+            {
+                Id = user.Id,
+                UserName = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Roles = roles
+            }
         };
     }
 }

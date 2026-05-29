@@ -1,12 +1,9 @@
-﻿namespace Application.DTOs
+namespace Application.DTOs;
+
+public class HotelDto
 {
-    public class HotelDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Location { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public decimal PricePerNight { get; set; }
-        public int MaxGuests { get; set; }
-    }
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
 }

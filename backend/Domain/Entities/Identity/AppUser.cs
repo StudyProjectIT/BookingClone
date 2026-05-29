@@ -13,4 +13,5 @@ public class AppUser : IdentityUser<long>
 
     public virtual ICollection<AppUserRole> UserRoles { get; set; } = null!;
     public ICollection<Message> Messages { get; set; } = null!;
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = null!;
 }

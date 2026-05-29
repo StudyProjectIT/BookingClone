@@ -1,30 +1,30 @@
+using FluentValidation;
 using System.Net;
 using System.Text.Json;
 
 namespace API.Middleware;
 
-public sealed class GlobalExceptionHandlingMiddleware
+public sealed class GlobalExceptionHandlingMiddleware(
+    RequestDelegate next,
+    ILogger<GlobalExceptionHandlingMiddleware> logger)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
-
-    public GlobalExceptionHandlingMiddleware(
-        RequestDelegate next,
-        ILogger<GlobalExceptionHandlingMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
+        }
+        catch (ValidationException ex)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+            var errors = ex.Errors.Select(e => e.ErrorMessage).ToList();
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new { errors }));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception while processing {Path}", context.Request.Path);
+            logger.LogError(ex, "Unhandled exception while processing {Path}", context.Request.Path);
 
             context.Response.ContentType = "application/problem+json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;

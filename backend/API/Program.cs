@@ -1,6 +1,5 @@
 using API.Middleware;
 using Application;
-using Application.Features.Auth.Commands.Register;
 using Domain.Interfaces;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,11 +25,9 @@ try
     builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
     builder.Host.UseSerilog();
 
-    // Composition root — layered DI
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddApplication();
 
-    // JWT Authentication
     var jwtKey = builder.Configuration["Jwt:Key"]
         ?? throw new InvalidOperationException("Jwt:Key is not configured");
 
@@ -51,23 +48,16 @@ try
         });
 
     builder.Services.AddAuthorization();
-
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
-    // CORS — allow React frontend
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("FrontendPolicy", policy =>
             policy.WithOrigins(builder.Configuration["Frontend:Url"] ?? "http://localhost:5173")
                   .AllowAnyHeader()
                   .AllowAnyMethod());
-    });
-
-    // MediatR
-    builder.Services.AddMediatR(cfg => {
-        cfg.RegisterServicesFromAssembly(typeof(RegisterCommand).Assembly);
     });
 
     var app = builder.Build();
