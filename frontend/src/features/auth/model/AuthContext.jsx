@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = tokenStorage.get();
-    if (token && !user) {
+    if (token) {
       setLoading(true);
       userApi.me()
         .then((u) => {
