@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@refinedev/antd": "^6.0.3",
+    "@refinedev/core": "^5.0.12",
+    "@refinedev/react-router": "^2.0.4",
+    "antd": "^5.29.3",
     "axios": "^1.15.2",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",

@@ -5,22 +5,32 @@ import { HomePage } from '@pages/home';
 import { HotelsPage } from '@pages/hotels';
 import { LoginPage } from '@pages/login';
 import { RegisterPage } from '@pages/register';
+import { AdminApp } from '@pages/admin';
 
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Header />
-        <main>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/hotels" element={<HotelsPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-      </AuthProvider>
+      <Routes>
+        <Route path="/admin/*" element={<AdminApp />} />
+
+        <Route
+          path="*"
+          element={
+            <AuthProvider>
+              <Header />
+              <main>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/hotels" element={<HotelsPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </main>
+            </AuthProvider>
+          }
+        />
+      </Routes>
     </BrowserRouter>
   );
 }
