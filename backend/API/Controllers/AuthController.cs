@@ -5,6 +5,7 @@ using Application.Features.Auth.Commands.Login;
 using Application.Features.Auth.Commands.RefreshToken;
 using Application.Features.Auth.Commands.Register;
 using Application.Features.Auth.Commands.RevokeToken;
+using Application.Features.Auth.Commands.UpdateProfile;
 using Application.Features.Auth.Queries.GetCurrentUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -45,6 +46,17 @@ public class AuthController(IMediator mediator) : ControllerBase
             return Unauthorized();
 
         return (await mediator.Send(new GetCurrentUserQuery(userId), ct)).ToActionResult();
+    }
+
+    [HttpPatch("profile")]
+    [Authorize]
+    public async Task<IActionResult> UpdateProfile([FromBody] ProfileUpdateDto dto, CancellationToken ct)
+    {
+        var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!long.TryParse(idClaim, out var userId))
+            return Unauthorized();
+
+        return (await mediator.Send(new UpdateProfileCommand(userId, dto), ct)).ToActionResult();
     }
 }
 

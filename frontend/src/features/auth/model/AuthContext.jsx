@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = tokenStorage.get();
-    if (token && !user) {
+    if (token) {
       setLoading(true);
       userApi.me()
         .then((u) => {
@@ -43,13 +43,18 @@ export function AuthProvider({ children }) {
     applyAuthResponse(data);
   };
 
+  const updateProfile = async (dto) => {
+    const data = await authApi.updateProfile(dto);
+    applyAuthResponse(data);
+  };
+
   const logout = () => {
     tokenStorage.clear();
     setUser(null);
   };
 
   const value = useMemo(
-    () => ({ user, isAuthenticated: !!user, loading, login, register, logout }),
+    () => ({ user, isAuthenticated: !!user, loading, login, register, updateProfile, logout }),
     [user, loading],
   );
 
