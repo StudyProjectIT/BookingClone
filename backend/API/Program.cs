@@ -3,8 +3,13 @@ using Application;
 using Domain.Interfaces;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+
+//using Microsoft.OpenApi;
 using Serilog;
+using System.Reflection;
 using System.Text;
 
 Log.Logger = new LoggerConfiguration()
@@ -30,27 +35,34 @@ try
 
     var jwtKey = builder.Configuration["Jwt:Key"]
         ?? throw new InvalidOperationException("Jwt:Key is not configured");
+    Console.WriteLine("---------"+builder.Configuration["Jwt:Key"]);
 
-    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
         .AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-                ValidateIssuer = true,
-                ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                ValidateAudience = true,
-                ValidAudience = builder.Configuration["Jwt:Audience"],
+                ValidateIssuer = false,
+                //ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidateAudience = false,
+                //ValidAudience = builder.Configuration["Jwt:Audience"],
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
             };
         });
 
-    builder.Services.AddAuthorization();
+    //builder.Services.AddAuthorization();
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+
+    
 
     var frontendOrigins = (builder.Configuration["Frontend:Url"] ?? "http://localhost:5173")
         .Split(' ', StringSplitOptions.RemoveEmptyEntries);
