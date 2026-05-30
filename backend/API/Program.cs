@@ -74,7 +74,7 @@ try
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     app.UseSerilogRequestLogging();
     app.UseCors("FrontendPolicy");
-    app.UseHttpsRedirection();
+    //app.UseHttpsRedirection();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
