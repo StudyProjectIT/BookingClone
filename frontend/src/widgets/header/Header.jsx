@@ -19,10 +19,10 @@ export function Header() {
       <Link to="/hotels">Hotels</Link>
       <div style={{ marginLeft: 'auto', display: 'flex', gap: 12 }}>
         {isAuthenticated ? (
-          <>
-            <span>Hi, {user.userName}</span>
-            <button onClick={() => { logout(); navigate('/'); }}>Sign out</button>
-          </>
+          <Link to="/profile">
+            <img style={{ marginRight: "0.5em", display: 'inline', height: '1.2em', width: 'auto' }} src="/user-icon.svg" />
+            {user.userName}
+          </Link>
         ) : (
           <>
             <Link to="/login">Sign in</Link>

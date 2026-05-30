@@ -6,6 +6,8 @@ import { HotelsPage } from '@pages/hotels';
 import { LoginPage } from '@pages/login';
 import { RegisterPage } from '@pages/register';
 import { AdminApp } from '@pages/admin';
+import { Page404 } from '@pages/page404';
+import { ProfilePage } from '@pages/profile';
 
 export default function App() {
   return (
@@ -24,7 +26,9 @@ export default function App() {
                   <Route path="/hotels" element={<HotelsPage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="*" element={<Page404 />} />
                 </Routes>
               </main>
             </AuthProvider>
