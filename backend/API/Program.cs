@@ -52,10 +52,13 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
+    var frontendOrigins = (builder.Configuration["Frontend:Url"] ?? "http://localhost:5173")
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("FrontendPolicy", policy =>
-            policy.WithOrigins(builder.Configuration["Frontend:Url"] ?? "http://localhost:5173")
+            policy.WithOrigins(frontendOrigins)
                   .AllowAnyHeader()
                   .AllowAnyMethod());
     });
@@ -71,7 +74,7 @@ try
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     app.UseSerilogRequestLogging();
     app.UseCors("FrontendPolicy");
-    app.UseHttpsRedirection();
+    //app.UseHttpsRedirection();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
