@@ -26,6 +26,18 @@ public class BookingRepository(AppDbContext context) : IBookingRepository
             .AsReadOnly();
     }
 
+    public async Task<(IReadOnlyList<Booking> Items, int TotalCount)> GetPagedByCustomerIdAsync(long customerId, int page, int pageSize, CancellationToken ct = default)
+    {
+        var query = WithIncludes().Where(b => b.CustomerId == customerId);
+        var totalCount = await query.CountAsync(ct);
+        var items = (await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(ct))
+            .AsReadOnly();
+        return (items, totalCount);
+    }
+
     public async Task<IReadOnlyList<Booking>> GetByHotelIdAsync(long hotelId, CancellationToken ct = default)
     {
         return (await context.BookingRoomVariants

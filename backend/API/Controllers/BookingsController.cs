@@ -18,13 +18,13 @@ namespace API.Controllers;
 public class BookingsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken ct)
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
     {
         var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!long.TryParse(idClaim, out var customerId))
             return Unauthorized();
 
-        return (await mediator.Send(new GetAllBookingsQuery(customerId), ct)).ToActionResult();
+        return (await mediator.Send(new GetAllBookingsQuery(customerId, page, pageSize), ct)).ToActionResult();
     }
 
     [HttpGet("{id:long}")]

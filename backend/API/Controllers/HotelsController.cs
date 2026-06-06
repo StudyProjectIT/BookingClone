@@ -16,8 +16,8 @@ namespace API.Controllers;
 public class HotelsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetHotels(CancellationToken ct)
-        => (await mediator.Send(new GetAllHotelsQuery(), ct)).ToActionResult();
+    public async Task<IActionResult> GetHotels([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
+        => (await mediator.Send(new GetAllHotelsQuery(page, pageSize), ct)).ToActionResult();
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetHotel(int id, CancellationToken ct)

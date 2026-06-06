@@ -16,6 +16,22 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
             .AsReadOnly();
     }
 
+    public async Task<(IReadOnlyList<Hotel> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, CancellationToken ct = default)
+    {
+        var query = context.Hotels
+            .Include(h => h.Address)
+                .ThenInclude(a => a.City);
+
+        var totalCount = await query.CountAsync(ct);
+        var items = (await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(ct))
+            .AsReadOnly();
+
+        return (items, totalCount);
+    }
+
     public async Task<Hotel?> GetByIdAsync(long id, CancellationToken ct = default)
     {
         return await context.Hotels

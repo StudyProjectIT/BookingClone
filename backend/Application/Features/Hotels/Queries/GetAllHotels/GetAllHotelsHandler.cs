@@ -6,12 +6,17 @@ using MediatR;
 namespace Application.Features.Hotels.Queries.GetAllHotels;
 
 public class GetAllHotelsHandler(IHotelRepository hotelRepository)
-    : IRequestHandler<GetAllHotelsQuery, Result<IReadOnlyList<HotelDto>>>
+    : IRequestHandler<GetAllHotelsQuery, Result<PagedResult<HotelDto>>>
 {
-    public async Task<Result<IReadOnlyList<HotelDto>>> Handle(GetAllHotelsQuery request, CancellationToken ct)
+    public async Task<Result<PagedResult<HotelDto>>> Handle(GetAllHotelsQuery request, CancellationToken ct)
     {
-        var hotels = await hotelRepository.GetAllAsync();
-        IReadOnlyList<HotelDto> dtos = hotels.Select(HotelMappings.MapToDto).ToList();
-        return Result<IReadOnlyList<HotelDto>>.Success(dtos);
+        var (items, totalCount) = await hotelRepository.GetPagedAsync(request.Page, request.PageSize, ct);
+        return new PagedResult<HotelDto>
+        {
+            Items = items.Select(HotelMappings.MapToDto).ToList().AsReadOnly(),
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize
+        };
     }
 }

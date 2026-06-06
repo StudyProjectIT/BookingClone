@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Application.Features.Hotels.Queries.GetAllHotels;
 
-public record GetAllHotelsQuery : IRequest<Result<IReadOnlyList<HotelDto>>>;
+public record GetAllHotelsQuery(int Page, int PageSize) : IRequest<Result<PagedResult<HotelDto>>>;

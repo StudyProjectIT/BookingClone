@@ -5,6 +5,7 @@ namespace Domain.Interfaces;
 public interface IHotelRepository
 {
     Task<IReadOnlyList<Hotel>> GetAllAsync(CancellationToken ct = default);
+    Task<(IReadOnlyList<Hotel> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, CancellationToken ct = default);
     Task<Hotel?> GetByIdAsync(long id, CancellationToken ct = default);
     Task<Hotel> AddAsync(Hotel hotel, CancellationToken ct = default);
     Task UpdateAsync(Hotel hotel, CancellationToken ct = default);
