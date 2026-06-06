@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { tokenStorage, userStorage } from '@shared/lib/tokenStorage';
+import { tokenStorage, refreshTokenStorage, userStorage } from '@shared/lib/tokenStorage';
 import { userApi } from '@entities/user';
 import { authApi } from '../api/authApi';
 
@@ -27,8 +27,15 @@ export function AuthProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const handler = () => setUser(null);
+    window.addEventListener('auth:logout', handler);
+    return () => window.removeEventListener('auth:logout', handler);
+  }, []);
+
   const applyAuthResponse = (data) => {
     tokenStorage.set(data.token);
+    refreshTokenStorage.set(data.refreshToken);
     userStorage.set(data.user);
     setUser(data.user);
   };

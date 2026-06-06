@@ -6,10 +6,10 @@ public class RegisterValidator : AbstractValidator<RegisterCommand>
 {
     public RegisterValidator()
     {
-        RuleFor(x => x.dto.Email).NotEmpty().EmailAddress();
-        RuleFor(x => x.dto.UserName).NotEmpty().MinimumLength(3).MaximumLength(64);
-        RuleFor(x => x.dto.Password).NotEmpty().MinimumLength(8);
-        RuleFor(x => x.dto.FirstName).NotEmpty().MaximumLength(100);
-        RuleFor(x => x.dto.LastName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.dto.Email).NotEmpty().WithName("Email").EmailAddress();
+        RuleFor(x => x.dto.UserName).NotEmpty().WithName("UserName").MinimumLength(3).MaximumLength(64);
+        RuleFor(x => x.dto.Password).NotEmpty().WithName("Password").MinimumLength(8);
+        RuleFor(x => x.dto.FirstName).NotEmpty().WithName("First Name").MaximumLength(100);
+        RuleFor(x => x.dto.LastName).NotEmpty().WithName("Last Name").MaximumLength(100);
     }
 }

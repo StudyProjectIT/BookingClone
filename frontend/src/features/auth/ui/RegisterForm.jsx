@@ -17,7 +17,13 @@ export function RegisterForm({ onSuccess }) {
       await register(form);
       onSuccess?.();
     } catch (err) {
-      setError(err.response?.data?.error ?? 'Registration failed');
+      const d = err.response?.data;
+      const message =
+        d?.error ??
+        (Array.isArray(d?.errors) ? d.errors.join('; ') : null) ??
+        d?.title ??
+        'Registration failed';
+      setError(message);
     } finally {
       setBusy(false);
     }
@@ -29,9 +35,9 @@ export function RegisterForm({ onSuccess }) {
     <form onSubmit={onSubmit} style={{ display: 'grid', gap: 8, maxWidth: 320 }}>
       <h2>Create account</h2>
       <input placeholder="Email" type="email" value={form.email} onChange={upd('email')} required />
-      <input placeholder="Username" value={form.userName} onChange={upd('userName')} required minLength={3} />
-      <input placeholder="First name" value={form.firstName} onChange={upd('firstName')} required />
-      <input placeholder="Last name" value={form.lastName} onChange={upd('lastName')} required />
+      <input placeholder="Username" value={form.userName} onChange={upd('userName')} required minLength={3} maxLength={64} />
+      <input placeholder="First name" value={form.firstName} onChange={upd('firstName')} required maxLength={100} />
+      <input placeholder="Last name" value={form.lastName} onChange={upd('lastName')} required maxLength={100} />
       <input placeholder="Password" type="password" value={form.password} onChange={upd('password')} required minLength={8} />
       {error && <div style={{ color: 'crimson' }}>{error}</div>}
       <button type="submit" disabled={busy}>{busy ? '...' : 'Register'}</button>
