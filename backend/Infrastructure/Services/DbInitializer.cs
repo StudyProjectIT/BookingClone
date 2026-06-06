@@ -5,6 +5,7 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Application.Interfaces;
 
 namespace Infrastructure.Services;
 

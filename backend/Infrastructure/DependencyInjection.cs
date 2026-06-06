@@ -1,3 +1,4 @@
+using Application.Interfaces;
 using Domain.Entities.Identity;
 using Domain.Interfaces;
 using Infrastructure.Data;
@@ -33,6 +34,16 @@ public static class DependencyInjection
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
+
+        services.AddScoped<IBookingDbContext, AppDbContext>();
+        //services.AddSingleton<IImageService, ImageService>();
+        //services.AddSingleton<IEmailService, GmailEmailService>();
+        services.AddTransient<IDbInicializer, DbInitializer>();
+        services.AddTransient<IScopeCoveredDbInicializer, ScopeCoveredDbInicializer>();
+        services.AddTransient<ICleanDataSeeder, CleanDataSeeder>();
+        services.AddTransient<IGeneratedDataSeeder, GeneratedDataSeeder>();
+        services.AddTransient<IAggregateSeeder, AggregateSeeder>();
+        services.AddScoped<IAuthService, AuthService>();
 
         services.AddScoped<IHotelRepository, HotelRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();

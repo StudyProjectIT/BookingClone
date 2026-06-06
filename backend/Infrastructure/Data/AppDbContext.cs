@@ -1,9 +1,11 @@
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Entities.Identity;
-using RefreshToken = Domain.Entities.Identity.RefreshToken;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using RefreshToken = Domain.Entities.Identity.RefreshToken;
 
 
 namespace Infrastructure.Data;
@@ -18,7 +20,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         IdentityUserLogin<long>,
         IdentityRoleClaim<long>,
         IdentityUserToken<long>
-    >(options)
+    >(options), IBookingDbContext
 {
     //public DbSet<Hotel> Hotels => Set<Hotel>();
     //public DbSet<Booking> Bookings => Set<Booking>();
@@ -69,5 +71,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
        
+    }
+
+    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
+    {
+        return Database.BeginTransactionAsync(cancellationToken);
     }
 }

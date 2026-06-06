@@ -1,0 +1,27 @@
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Application.Interfaces;
+using Application.MediatR.Chats.Queries.Shared;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+namespace Application.MediatR.Chats.Queries.GetAll;
+
+public class GetAllChatsQueryHandler(
+	IBookingDbContext context,
+	IMapper mapper,
+	ICurrentUserService currentUserService
+) : IRequestHandler<GetAllChatsQuery, IEnumerable<ChatVm>> {
+
+	public async Task<IEnumerable<ChatVm>> Handle(GetAllChatsQuery request, CancellationToken cancellationToken) {
+		var userId = currentUserService.GetRequiredUserId();
+
+		var items = await context.Chats
+			.AsNoTracking()
+			.Where(c => c.RealtorId == userId || c.CustomerId == userId)
+			.ProjectTo<ChatVm>(mapper.ConfigurationProvider)
+			.ToArrayAsync(cancellationToken);
+
+		return items;
+	}
+}

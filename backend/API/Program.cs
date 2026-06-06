@@ -1,5 +1,6 @@
 using API.Middleware;
 using Application;
+using Application.Interfaces;
 using Domain.Interfaces;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

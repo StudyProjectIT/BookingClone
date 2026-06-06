@@ -1,0 +1,18 @@
+﻿using Application.Interfaces;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+namespace Application.MediatR.Hotels.Queries.GetMaxPrice;
+
+public class GetMaxPriceCommandHandler(
+	IBookingDbContext context
+) : IRequestHandler<GetMaxPriceCommand, decimal?> {
+
+	public Task<decimal?> Handle(GetMaxPriceCommand request, CancellationToken cancellationToken) {
+		return context.RoomVariants
+			.MaxAsync(
+				rv => (decimal?)(rv.DiscountPrice ?? rv.Price),
+				cancellationToken
+			);
+	}
+}

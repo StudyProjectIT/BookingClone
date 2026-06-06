@@ -1,0 +1,28 @@
+﻿using Application.Common.Exceptions;
+using Application.Interfaces;
+using Domain.Entities;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+namespace Application.MediatR.HotelReviews.Commands.Update;
+
+public class UpdateHotelReviewCommandHandler(
+	IBookingDbContext context,
+	ICurrentUserService currentUserService
+) : IRequestHandler<UpdateHotelReviewCommand> {
+
+	public async Task Handle(UpdateHotelReviewCommand request, CancellationToken cancellationToken) {
+		var entity = await context.HotelReviews
+			.FirstOrDefaultAsync(
+				hr => hr.Id == request.Id && hr.Booking.CustomerId == currentUserService.GetRequiredUserId(),
+				cancellationToken
+			)
+			?? throw new NotFoundException(nameof(HotelReview), request.Id);
+
+		entity.Description = request.Description;
+		entity.Score = request.Score;
+		entity.UpdatedAtUtc = DateTime.UtcNow;
+
+		await context.SaveChangesAsync(cancellationToken);
+	}
+}
