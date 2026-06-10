@@ -1,9 +1,11 @@
+using Application.Interfaces;
 using Domain.Entities.Identity;
 using Domain.Interfaces;
 using Domain.Interfaces.Repositories;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
+using Infrastructure.Storage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -48,7 +50,14 @@ public static class DependencyInjection
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-        services.AddScoped<Application.Interfaces.ITokenService, Services.TokenService>();
+        services.AddScoped<ITokenService, TokenService>();
+
+        services.Configure<FileStorageOptions>(configuration.GetSection("FileStorage"));
+        var storageProvider = configuration["FileStorage:Provider"] ?? "Local";
+        if (storageProvider.Equals("S3", StringComparison.OrdinalIgnoreCase))
+            services.AddScoped<IFileStorageService, S3FileStorageService>();
+        else
+            services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
         services.AddTransient<IDbInicializer, DbInitializer>();
         services.AddTransient<IScopeCoveredDbInicializer, ScopeCoveredDbInicializer>();

@@ -127,6 +127,7 @@ try
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     app.UseSerilogRequestLogging();
     app.UseCors("FrontendPolicy");
+    app.UseStaticFiles();
     //app.UseHttpsRedirection();
     app.UseAuthentication();
     app.UseAuthorization();
