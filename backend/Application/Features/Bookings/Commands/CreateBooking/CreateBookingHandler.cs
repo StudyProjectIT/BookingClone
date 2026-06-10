@@ -14,11 +14,18 @@ public class CreateBookingHandler(IBookingRepository bookingRepository)
         if (request.CheckOut <= request.CheckIn)
             return Error.Validation("CheckOut must be later than CheckIn.");
 
+        var checkIn = DateOnly.FromDateTime(request.CheckIn);
+        var checkOut = DateOnly.FromDateTime(request.CheckOut);
+
+        var available = await bookingRepository.IsRoomVariantAvailableAsync(request.RoomVariantId, checkIn, checkOut, null, ct);
+        if (!available)
+            return Error.Conflict("Room is not available for selected dates.");
+
         var booking = new Booking
         {
             CustomerId = request.CustomerId,
-            DateFrom = DateOnly.FromDateTime(request.CheckIn),
-            DateTo = DateOnly.FromDateTime(request.CheckOut),
+            DateFrom = checkIn,
+            DateTo = checkOut,
             AmountToPay = request.TotalPrice,
             PersonalWishes = request.PersonalWishes,
             EstimatedTimeOfArrivalUtc = new DateTimeOffset(request.CheckIn, TimeSpan.Zero),

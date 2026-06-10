@@ -18,8 +18,15 @@ public class UpdateBookingHandler(IBookingRepository bookingRepository)
         if (booking is null)
             return Error.NotFound($"Booking with id {request.Id} not found.");
 
-        booking.DateFrom = DateOnly.FromDateTime(request.CheckIn);
-        booking.DateTo = DateOnly.FromDateTime(request.CheckOut);
+        var checkIn = DateOnly.FromDateTime(request.CheckIn);
+        var checkOut = DateOnly.FromDateTime(request.CheckOut);
+
+        var available = await bookingRepository.IsRoomVariantAvailableAsync(request.RoomVariantId, checkIn, checkOut, request.Id, ct);
+        if (!available)
+            return Error.Conflict("Room is not available for selected dates.");
+
+        booking.DateFrom = checkIn;
+        booking.DateTo = checkOut;
         booking.AmountToPay = request.TotalPrice;
         booking.PersonalWishes = request.PersonalWishes;
 

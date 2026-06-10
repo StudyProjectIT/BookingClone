@@ -53,6 +53,19 @@ public class BookingRepository(AppDbContext context) : IBookingRepository
         return await WithIncludes().FirstOrDefaultAsync(b => b.Id == id, ct);
     }
 
+    public async Task<bool> IsRoomVariantAvailableAsync(long roomVariantId, DateOnly checkIn, DateOnly checkOut, long? excludeBookingId, CancellationToken ct = default)
+    {
+        var query = context.BookingRoomVariants
+            .Where(brv => brv.RoomVariantId == roomVariantId
+                && brv.Booking.DateFrom < checkOut
+                && brv.Booking.DateTo > checkIn);
+
+        if (excludeBookingId.HasValue)
+            query = query.Where(brv => brv.BookingId != excludeBookingId.Value);
+
+        return !await query.AnyAsync(ct);
+    }
+
     public async Task<Booking> AddAsync(Booking booking, CancellationToken ct = default)
     {
         context.Bookings.Add(booking);
