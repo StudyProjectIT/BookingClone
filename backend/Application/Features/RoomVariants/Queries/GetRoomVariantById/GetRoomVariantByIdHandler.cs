@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.RoomVariants.Queries.GetRoomVariantById;
 
-public class GetRoomVariantByIdHandler(IRepository<RoomVariant> repository)
+public class GetRoomVariantByIdHandler(IRoomVariantRepository repository)
     : IRequestHandler<GetRoomVariantByIdQuery, Result<RoomVariantDto>>
 {
     public async Task<Result<RoomVariantDto>> Handle(GetRoomVariantByIdQuery request, CancellationToken ct)

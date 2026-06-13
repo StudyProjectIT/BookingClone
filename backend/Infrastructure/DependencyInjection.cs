@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Domain.Entities;
 using Domain.Entities.Identity;
 using Domain.Interfaces;
 using Domain.Interfaces.Repositories;
@@ -47,7 +48,9 @@ public static class DependencyInjection
         services.AddScoped<IHotelPhotoRepository, HotelPhotoRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IRoomVariantRepository, RoomVariantRepository>();
-
+        services.AddScoped<ICityRepository, CityRepository>();
+        services.AddScoped<IAddressRepository, AddressRepository>();
+        
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
         services.AddScoped<ITokenService, TokenService>();

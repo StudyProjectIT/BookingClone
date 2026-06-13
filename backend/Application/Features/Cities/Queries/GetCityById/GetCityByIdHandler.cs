@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.Cities.Queries.GetCityById;
 
-public class GetCityByIdHandler(IRepository<City> repository)
+public class GetCityByIdHandler(ICityRepository repository)
     : IRequestHandler<GetCityByIdQuery, Result<CityDto>>
 {
     public async Task<Result<CityDto>> Handle(GetCityByIdQuery request, CancellationToken ct)

@@ -1,12 +1,11 @@
 using Application.DTOs;
 using Domain.Common;
-using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Features.Cities.Queries.GetAllCities;
 
-public class GetAllCitiesHandler(IRepository<City> repository)
+public class GetAllCitiesHandler(ICityRepository repository)
     : IRequestHandler<GetAllCitiesQuery, Result<PagedResult<CityDto>>>
 {
     public async Task<Result<PagedResult<CityDto>>> Handle(GetAllCitiesQuery request, CancellationToken ct)

@@ -8,10 +8,10 @@ public class Repository<T>(AppDbContext context) : IRepository<T> where T : clas
 {
     protected AppDbContext Context { get; } = context;
 
-    public async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken ct = default) =>
+    public virtual async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken ct = default) =>
         (await Context.Set<T>().ToListAsync(ct)).AsReadOnly();
 
-    public async Task<(IReadOnlyList<T> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, CancellationToken ct = default)
+    public virtual async Task<(IReadOnlyList<T> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, CancellationToken ct = default)
     {
         var query = Context.Set<T>();
         var totalCount = await query.CountAsync(ct);
@@ -19,7 +19,7 @@ public class Repository<T>(AppDbContext context) : IRepository<T> where T : clas
         return (items, totalCount);
     }
 
-    public async Task<T?> GetByIdAsync(long id, CancellationToken ct = default) =>
+    public virtual async Task<T?> GetByIdAsync(long id, CancellationToken ct = default) =>
         await Context.Set<T>().FindAsync([id], ct);
 
     public async Task<T> AddAsync(T entity, CancellationToken ct = default)

@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.Addresses.Queries.GetAddressById;
 
-public class GetAddressByIdHandler(IRepository<Address> repository)
+public class GetAddressByIdHandler(IAddressRepository repository)
     : IRequestHandler<GetAddressByIdQuery, Result<AddressDto>>
 {
     public async Task<Result<AddressDto>> Handle(GetAddressByIdQuery request, CancellationToken ct)
