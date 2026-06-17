@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Application.Interfaces;
 using Domain.Common;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
@@ -6,7 +7,7 @@ using MediatR;
 
 namespace Application.Features.BankCards.Commands.UpdateBankCard;
 
-public class UpdateBankCardHandler(IRepository<BankCard> repository)
+public class UpdateBankCardHandler(IRepository<BankCard> repository, ICurrentUserService currentUser)
     : IRequestHandler<UpdateBankCardCommand, Result<BankCardDto>>
 {
     public async Task<Result<BankCardDto>> Handle(UpdateBankCardCommand request, CancellationToken ct)
@@ -15,8 +16,8 @@ public class UpdateBankCardHandler(IRepository<BankCard> repository)
         if (entity is null)
             return Error.NotFound($"Bank card with id {request.Id} not found.");
 
-        if (string.IsNullOrWhiteSpace(request.Number))
-            return Error.Validation("Card number is required.");
+        if (entity.CustomerId != currentUser.GetUserId())
+            return Error.Forbidden("You do not have access to this resource.");
 
         entity.Number = request.Number;
         entity.ExpirationDate = request.ExpirationDate;

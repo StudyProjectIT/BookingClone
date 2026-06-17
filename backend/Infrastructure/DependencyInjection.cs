@@ -54,6 +54,8 @@ public static class DependencyInjection
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
         services.AddScoped<ITokenService, TokenService>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         services.Configure<FileStorageOptions>(configuration.GetSection("FileStorage"));
         var storageProvider = configuration["FileStorage:Provider"] ?? "Local";

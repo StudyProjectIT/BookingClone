@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Application.Interfaces;
 using Domain.Common;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
@@ -6,7 +7,7 @@ using MediatR;
 
 namespace Application.Features.Messages.Commands.UpdateMessage;
 
-public class UpdateMessageHandler(IRepository<Message> repository)
+public class UpdateMessageHandler(IRepository<Message> repository, ICurrentUserService currentUser)
     : IRequestHandler<UpdateMessageCommand, Result<MessageDto>>
 {
     public async Task<Result<MessageDto>> Handle(UpdateMessageCommand request, CancellationToken ct)
@@ -15,8 +16,8 @@ public class UpdateMessageHandler(IRepository<Message> repository)
         if (entity is null)
             return Error.NotFound($"Message with id {request.Id} not found.");
 
-        if (string.IsNullOrWhiteSpace(request.Text))
-            return Error.Validation("Message text is required.");
+        if (entity.AuthorId != currentUser.GetUserId())
+            return Error.Forbidden("You do not have access to this resource.");
 
         entity.Text = request.Text;
         entity.UpdatedAtUtc = DateTime.UtcNow;

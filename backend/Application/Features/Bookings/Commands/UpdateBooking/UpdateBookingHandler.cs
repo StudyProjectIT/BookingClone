@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Application.Interfaces;
 using Domain.Common;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -6,7 +7,7 @@ using MediatR;
 
 namespace Application.Features.Bookings.Commands.UpdateBooking;
 
-public class UpdateBookingHandler(IBookingRepository bookingRepository)
+public class UpdateBookingHandler(IBookingRepository bookingRepository, ICurrentUserService currentUser)
     : IRequestHandler<UpdateBookingCommand, Result<BookingDto>>
 {
     public async Task<Result<BookingDto>> Handle(UpdateBookingCommand request, CancellationToken ct)
@@ -17,6 +18,9 @@ public class UpdateBookingHandler(IBookingRepository bookingRepository)
         var booking = await bookingRepository.GetByIdAsync(request.Id);
         if (booking is null)
             return Error.NotFound($"Booking with id {request.Id} not found.");
+
+        if (booking.CustomerId != currentUser.GetUserId())
+            return Error.Forbidden("You do not have access to this resource.");
 
         var checkIn = DateOnly.FromDateTime(request.CheckIn);
         var checkOut = DateOnly.FromDateTime(request.CheckOut);
