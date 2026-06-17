@@ -4,6 +4,7 @@ using Application.Features.Hotels.Commands.DeleteHotel;
 using Application.Features.Hotels.Commands.UpdateHotel;
 using Application.Features.Hotels.Queries.GetAllHotels;
 using Application.Features.Hotels.Queries.GetHotelById;
+using Application.Features.Hotels.Queries.GetHotelsByRealtorId;
 using Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -16,25 +17,36 @@ namespace API.Controllers;
 public class HotelsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetHotels([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
-        => (await mediator.Send(new GetAllHotelsQuery(page, pageSize), ct)).ToActionResult();
+    public async Task<IActionResult> GetHotels(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? name = null,
+        [FromQuery] long? categoryId = null,
+        [FromQuery] string? city = null,
+        CancellationToken ct = default)
+        => (await mediator.Send(new GetAllHotelsQuery(page, pageSize, name, categoryId, city), ct)).ToActionResult();
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetHotel(int id, CancellationToken ct)
         => (await mediator.Send(new GetHotelByIdQuery(id), ct)).ToActionResult();
+
+    [HttpGet("by-realtor/{realtorId:long}")]
+    [Authorize(Roles = Roles.Admin + "," + Roles.Realtor)]
+    public async Task<IActionResult> GetByRealtor(long realtorId, CancellationToken ct)
+        => (await mediator.Send(new GetHotelsByRealtorIdQuery(realtorId), ct)).ToActionResult();
 
     [HttpPost]
     [Authorize(Roles = Roles.Admin + "," + Roles.Realtor)]
     public async Task<IActionResult> CreateHotel([FromBody] CreateHotelCommand command, CancellationToken ct)
         => (await mediator.Send(command, ct)).ToCreatedResult();
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:long}")]
     [Authorize(Roles = Roles.Admin + "," + Roles.Realtor)]
-    public async Task<IActionResult> UpdateHotel(int id, [FromBody] UpdateHotelCommand command, CancellationToken ct)
-        => (await mediator.Send(command with { Id = id }, ct)).ToNoContentResult();
+    public async Task<IActionResult> UpdateHotel(long id, [FromBody] UpdateHotelCommand command, CancellationToken ct)
+        => (await mediator.Send(command with { Id = (int)id }, ct)).ToNoContentResult();
 
-    [HttpDelete("{id:int}")]
-    [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> DeleteHotel(int id, CancellationToken ct)
-        => (await mediator.Send(new DeleteHotelCommand(id), ct)).ToNoContentResult();
+    [HttpDelete("{id:long}")]
+    [Authorize(Roles = Roles.Admin + "," + Roles.Realtor)]
+    public async Task<IActionResult> DeleteHotel(long id, CancellationToken ct)
+        => (await mediator.Send(new DeleteHotelCommand((int)id), ct)).ToNoContentResult();
 }

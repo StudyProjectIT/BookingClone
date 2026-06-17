@@ -2,8 +2,18 @@ namespace Application.DTOs;
 
 public class HotelDto
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public string Location { get; set; } = string.Empty;
+    public string CityName { get; set; } = string.Empty;
+    public string CountryName { get; set; } = string.Empty;
+    public string Street { get; set; } = string.Empty;
+    public long HotelCategoryId { get; set; }
+    public string HotelCategoryName { get; set; } = string.Empty;
+    public long RealtorId { get; set; }
+    public bool IsArchived { get; set; }
+    public DateTimeOffset ArrivalTimeUtcFrom { get; set; }
+    public DateTimeOffset ArrivalTimeUtcTo { get; set; }
+    public DateTimeOffset DepartureTimeUtcFrom { get; set; }
+    public DateTimeOffset DepartureTimeUtcTo { get; set; }
 }

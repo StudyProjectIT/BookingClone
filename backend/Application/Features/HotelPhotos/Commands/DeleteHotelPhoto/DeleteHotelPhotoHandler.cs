@@ -1,3 +1,4 @@
+using Application.Interfaces;
 using Domain.Common;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
@@ -5,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.HotelPhotos.Commands.DeleteHotelPhoto;
 
-public class DeleteHotelPhotoHandler(IRepository<HotelPhoto> repository)
+public class DeleteHotelPhotoHandler(IRepository<HotelPhoto> repository, IFileStorageService storage)
     : IRequestHandler<DeleteHotelPhotoCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(DeleteHotelPhotoCommand request, CancellationToken ct)
@@ -13,7 +14,9 @@ public class DeleteHotelPhotoHandler(IRepository<HotelPhoto> repository)
         var entity = await repository.GetByIdAsync(request.Id, ct);
         if (entity is null)
             return Error.NotFound($"Hotel photo with id {request.Id} not found.");
+
         await repository.DeleteAsync(request.Id, ct);
+        await storage.DeleteAsync(entity.Name, ct);
         return true;
     }
 }

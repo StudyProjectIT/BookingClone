@@ -10,7 +10,6 @@ public record UpdateHotelCommand(
     string Description,
     long AddressId,
     long HotelCategoryId,
-    long RealtorId,
     DateTimeOffset ArrivalTimeUtcFrom,
     DateTimeOffset ArrivalTimeUtcTo,
     DateTimeOffset DepartureTimeUtcFrom,

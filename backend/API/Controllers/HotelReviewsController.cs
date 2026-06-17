@@ -3,6 +3,7 @@ using Application.Features.HotelReviews.Commands.CreateHotelReview;
 using Application.Features.HotelReviews.Commands.DeleteHotelReview;
 using Application.Features.HotelReviews.Commands.UpdateHotelReview;
 using Application.Features.HotelReviews.Queries.GetHotelReviewById;
+using Application.Features.HotelReviews.Queries.GetHotelReviewsByHotelId;
 using Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -17,6 +18,10 @@ public class HotelReviewsController(IMediator mediator) : ControllerBase
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id, CancellationToken ct)
         => (await mediator.Send(new GetHotelReviewByIdQuery(id), ct)).ToActionResult();
+
+    [HttpGet("by-hotel/{hotelId:long}")]
+    public async Task<IActionResult> GetByHotel(long hotelId, CancellationToken ct)
+        => (await mediator.Send(new GetHotelReviewsByHotelIdQuery(hotelId), ct)).ToActionResult();
 
     [HttpPost]
     [Authorize(Roles = Roles.Customer)]

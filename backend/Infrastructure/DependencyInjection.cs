@@ -50,6 +50,8 @@ public static class DependencyInjection
         services.AddScoped<IRoomVariantRepository, RoomVariantRepository>();
         services.AddScoped<ICityRepository, CityRepository>();
         services.AddScoped<IAddressRepository, AddressRepository>();
+        services.AddScoped<IHotelReviewRepository, HotelReviewRepository>();
+        services.AddScoped<IRealtorReviewRepository, RealtorReviewRepository>();
         
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 

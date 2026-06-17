@@ -6,6 +6,8 @@ using Application.Features.Bookings.Commands.DeleteBooking;
 using Application.Features.Bookings.Commands.UpdateBooking;
 using Application.Features.Bookings.Queries.GetAllBookings;
 using Application.Features.Bookings.Queries.GetBookingById;
+using Application.Features.Bookings.Queries.GetBookingsByHotelId;
+using Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,11 @@ public class BookingsController(IMediator mediator) : ControllerBase
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id, CancellationToken ct)
         => (await mediator.Send(new GetBookingByIdQuery(id), ct)).ToActionResult();
+
+    [HttpGet("by-hotel/{hotelId:long}")]
+    [Authorize(Roles = Roles.Admin + "," + Roles.Realtor)]
+    public async Task<IActionResult> GetByHotel(long hotelId, CancellationToken ct)
+        => (await mediator.Send(new GetBookingsByHotelIdQuery(hotelId), ct)).ToActionResult();
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateBookingDto dto, CancellationToken ct)

@@ -7,9 +7,19 @@ internal static class HotelMappings
 {
     internal static HotelDto MapToDto(Hotel h) => new()
     {
-        Id = (int)h.Id,
+        Id = h.Id,
         Name = h.Name,
         Description = h.Description,
-        Location = h.Address?.City?.Name ?? string.Empty
+        CityName = h.Address?.City?.Name ?? string.Empty,
+        CountryName = h.Address?.City?.Country?.Name ?? string.Empty,
+        Street = h.Address is not null ? $"{h.Address.Street} {h.Address.HouseNumber}" : string.Empty,
+        HotelCategoryId = h.HotelCategoryId,
+        HotelCategoryName = h.HotelCategory?.Name ?? string.Empty,
+        RealtorId = h.RealtorId,
+        IsArchived = h.IsArchived,
+        ArrivalTimeUtcFrom = h.ArrivalTimeUtcFrom,
+        ArrivalTimeUtcTo = h.ArrivalTimeUtcTo,
+        DepartureTimeUtcFrom = h.DepartureTimeUtcFrom,
+        DepartureTimeUtcTo = h.DepartureTimeUtcTo
     };
 }

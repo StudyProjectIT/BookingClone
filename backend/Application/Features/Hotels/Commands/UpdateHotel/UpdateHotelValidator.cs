@@ -11,7 +11,6 @@ public class UpdateHotelValidator : AbstractValidator<UpdateHotelCommand>
         RuleFor(x => x.Description).NotEmpty().MaximumLength(4000);
         RuleFor(x => x.AddressId).GreaterThan(0);
         RuleFor(x => x.HotelCategoryId).GreaterThan(0);
-        RuleFor(x => x.RealtorId).GreaterThan(0);
         RuleFor(x => x.ArrivalTimeUtcTo).GreaterThan(x => x.ArrivalTimeUtcFrom);
         RuleFor(x => x.DepartureTimeUtcTo).GreaterThan(x => x.DepartureTimeUtcFrom);
     }
