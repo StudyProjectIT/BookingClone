@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.Cities.Commands.UpdateCity;
 
-public class UpdateCityHandler(IRepository<City> repository)
+public class UpdateCityHandler(ICityRepository repository)
     : IRequestHandler<UpdateCityCommand, Result<CityDto>>
 {
     public async Task<Result<CityDto>> Handle(UpdateCityCommand request, CancellationToken ct)

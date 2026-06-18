@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Features.Cities.Commands.DeleteCity;
 
-public class DeleteCityHandler(IRepository<City> repository)
+public class DeleteCityHandler(ICityRepository repository)
     : IRequestHandler<DeleteCityCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(DeleteCityCommand request, CancellationToken ct)

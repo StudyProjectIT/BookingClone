@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.RoomVariants.Commands.UpdateRoomVariant;
 
-public class UpdateRoomVariantHandler(IRepository<RoomVariant> repository)
+public class UpdateRoomVariantHandler(IRoomVariantRepository repository)
     : IRequestHandler<UpdateRoomVariantCommand, Result<RoomVariantDto>>
 {
     public async Task<Result<RoomVariantDto>> Handle(UpdateRoomVariantCommand request, CancellationToken ct)

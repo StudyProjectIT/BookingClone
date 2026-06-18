@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Features.RoomVariants.Commands.DeleteRoomVariant;
 
-public class DeleteRoomVariantHandler(IRepository<RoomVariant> repository)
+public class DeleteRoomVariantHandler(IRoomVariantRepository repository)
     : IRequestHandler<DeleteRoomVariantCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(DeleteRoomVariantCommand request, CancellationToken ct)

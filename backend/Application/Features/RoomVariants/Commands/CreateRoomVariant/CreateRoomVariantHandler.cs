@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.RoomVariants.Commands.CreateRoomVariant;
 
-public class CreateRoomVariantHandler(IRepository<RoomVariant> repository)
+public class CreateRoomVariantHandler(IRoomVariantRepository repository)
     : IRequestHandler<CreateRoomVariantCommand, Result<RoomVariantDto>>
 {
     public async Task<Result<RoomVariantDto>> Handle(CreateRoomVariantCommand request, CancellationToken ct)
@@ -29,7 +29,8 @@ public class CreateRoomVariantHandler(IRepository<RoomVariant> repository)
                 KingsizeBedCount = request.KingsizeBedCount
             }
         };
-        var created = await repository.AddAsync(entity, ct);
-        return RoomVariantMappings.MapToDto(created);
+        await repository.AddAsync(entity, ct);
+        var created = await repository.GetByIdAsync(entity.Id, ct);
+        return RoomVariantMappings.MapToDto(created!);
     }
 }

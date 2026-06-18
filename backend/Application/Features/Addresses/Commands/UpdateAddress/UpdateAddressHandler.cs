@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.Addresses.Commands.UpdateAddress;
 
-public class UpdateAddressHandler(IRepository<Address> repository)
+public class UpdateAddressHandler(IAddressRepository repository)
     : IRequestHandler<UpdateAddressCommand, Result<AddressDto>>
 {
     public async Task<Result<AddressDto>> Handle(UpdateAddressCommand request, CancellationToken ct)

@@ -9,11 +9,11 @@ public class Repository<T>(AppDbContext context) : IRepository<T> where T : clas
     protected AppDbContext Context { get; } = context;
 
     public virtual async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken ct = default) =>
-        (await Context.Set<T>().ToListAsync(ct)).AsReadOnly();
+        (await Context.Set<T>().AsNoTracking().ToListAsync(ct)).AsReadOnly();
 
     public virtual async Task<(IReadOnlyList<T> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, CancellationToken ct = default)
     {
-        var query = Context.Set<T>();
+        var query = Context.Set<T>().AsNoTracking();
         var totalCount = await query.CountAsync(ct);
         var items = (await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct)).AsReadOnly();
         return (items, totalCount);

@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.Addresses.Commands.CreateAddress;
 
-public class CreateAddressHandler(IRepository<Address> repository)
+public class CreateAddressHandler(IAddressRepository repository)
     : IRequestHandler<CreateAddressCommand, Result<AddressDto>>
 {
     public async Task<Result<AddressDto>> Handle(CreateAddressCommand request, CancellationToken ct)
@@ -22,7 +22,8 @@ public class CreateAddressHandler(IRepository<Address> repository)
             ApartmentNumber = request.ApartmentNumber,
             CityId = request.CityId
         };
-        var created = await repository.AddAsync(entity, ct);
-        return AddressMappings.MapToDto(created);
+        await repository.AddAsync(entity, ct);
+        var created = await repository.GetByIdAsync(entity.Id, ct);
+        return AddressMappings.MapToDto(created!);
     }
 }

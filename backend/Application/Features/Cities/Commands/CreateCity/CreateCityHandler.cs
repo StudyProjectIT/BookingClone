@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.Cities.Commands.CreateCity;
 
-public class CreateCityHandler(IRepository<City> repository)
+public class CreateCityHandler(ICityRepository repository)
     : IRequestHandler<CreateCityCommand, Result<CityDto>>
 {
     public async Task<Result<CityDto>> Handle(CreateCityCommand request, CancellationToken ct)
@@ -22,7 +22,8 @@ public class CreateCityHandler(IRepository<City> repository)
             Latitude = request.Latitude,
             CountryId = request.CountryId
         };
-        var created = await repository.AddAsync(entity, ct);
-        return CityMappings.MapToDto(created);
+        await repository.AddAsync(entity, ct);
+        var created = await repository.GetByIdAsync(entity.Id, ct);
+        return CityMappings.MapToDto(created!);
     }
 }

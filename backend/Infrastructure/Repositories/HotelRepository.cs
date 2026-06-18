@@ -14,11 +14,11 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
         .Include(h => h.HotelCategory);
 
     public async Task<IReadOnlyList<Hotel>> GetAllAsync(CancellationToken ct = default) =>
-        (await WithIncludes().ToListAsync(ct)).AsReadOnly();
+        (await WithIncludes().AsNoTracking().ToListAsync(ct)).AsReadOnly();
 
     public async Task<(IReadOnlyList<Hotel> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, CancellationToken ct = default)
     {
-        var query = WithIncludes();
+        var query = WithIncludes().AsNoTracking();
         var totalCount = await query.CountAsync(ct);
         var items = (await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct)).AsReadOnly();
         return (items, totalCount);
@@ -27,7 +27,7 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
     public async Task<(IReadOnlyList<Hotel> Items, int TotalCount)> GetFilteredAsync(
         string? name, long? categoryId, string? cityName, int page, int pageSize, CancellationToken ct = default)
     {
-        var query = WithIncludes().Where(h => !h.IsArchived);
+        var query = WithIncludes().AsNoTracking().Where(h => !h.IsArchived);
 
         if (!string.IsNullOrWhiteSpace(name))
             query = query.Where(h => h.Name.ToLower().Contains(name.ToLower()));
@@ -44,8 +44,9 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
     }
 
     public async Task<IReadOnlyList<Hotel>> GetByRealtorIdAsync(long realtorId, CancellationToken ct = default) =>
-        (await WithIncludes().Where(h => h.RealtorId == realtorId).ToListAsync(ct)).AsReadOnly();
+        (await WithIncludes().AsNoTracking().Where(h => h.RealtorId == realtorId).ToListAsync(ct)).AsReadOnly();
 
+    // No AsNoTracking — entity may be used for update
     public async Task<Hotel?> GetByIdAsync(long id, CancellationToken ct = default) =>
         await WithIncludes().FirstOrDefaultAsync(h => h.Id == id, ct);
 
