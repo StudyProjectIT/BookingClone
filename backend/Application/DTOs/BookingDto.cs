@@ -9,5 +9,8 @@
         public DateTime CheckOut { get; set; }
         public int Guests { get; set; }
         public decimal TotalPrice { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTimeOffset? CancelledAtUtc { get; set; }
+        public DateTimeOffset? ConfirmedAtUtc { get; set; }
     }
 }

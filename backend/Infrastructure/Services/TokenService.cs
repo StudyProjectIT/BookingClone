@@ -15,11 +15,11 @@ public class TokenService(IConfiguration configuration) : ITokenService
     {
         var key = configuration["Jwt:Key"]
                   ?? throw new InvalidOperationException("Jwt:Key is not configured.");
-        //var issuer = configuration["Jwt:Issuer"];
-        //var audience = configuration["Jwt:Audience"];
+        var issuer = configuration["Jwt:Issuer"];
+        var audience = configuration["Jwt:Audience"];
         var lifetimeMinutes = int.TryParse(configuration["Jwt:LifetimeMinutes"], out var m) ? m : 60 * 24;
 
-        var expiresAt = DateTime.UtcNow.AddMinutes(60);
+        var expiresAt = DateTime.UtcNow.AddMinutes(lifetimeMinutes);
 
         var claims = new List<Claim>
         {
@@ -36,8 +36,8 @@ public class TokenService(IConfiguration configuration) : ITokenService
             SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            //issuer: issuer,
-            //audience: audience,
+            issuer: issuer,
+            audience: audience,
             claims: claims,
             expires: expiresAt,
             signingCredentials: creds);

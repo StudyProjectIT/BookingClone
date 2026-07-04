@@ -1,6 +1,7 @@
 using Application.DTOs;
 using Domain.Common;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Interfaces;
 using MediatR;
 
@@ -29,6 +30,7 @@ public class CreateBookingHandler(IBookingRepository bookingRepository)
             AmountToPay = request.TotalPrice,
             PersonalWishes = request.PersonalWishes,
             EstimatedTimeOfArrivalUtc = new DateTimeOffset(request.CheckIn, TimeSpan.Zero),
+            Status = BookingStatus.Pending,
             BookingRoomVariants = new List<BookingRoomVariant>
             {
                 new()

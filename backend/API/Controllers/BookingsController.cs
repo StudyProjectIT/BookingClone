@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using API.Common;
 using Application.DTOs;
+using Application.Features.Bookings.Commands.ChangeBookingStatus;
 using Application.Features.Bookings.Commands.CreateBooking;
 using Application.Features.Bookings.Commands.DeleteBooking;
 using Application.Features.Bookings.Commands.UpdateBooking;
@@ -8,6 +9,7 @@ using Application.Features.Bookings.Queries.GetAllBookings;
 using Application.Features.Bookings.Queries.GetBookingById;
 using Application.Features.Bookings.Queries.GetBookingsByHotelId;
 using Domain.Constants;
+using Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -72,7 +74,13 @@ public class BookingsController(IMediator mediator) : ControllerBase
         return (await mediator.Send(command, ct)).ToNoContentResult();
     }
 
+    [HttpPatch("{id:long}/status")]
+    public async Task<IActionResult> ChangeStatus(long id, [FromBody] ChangeBookingStatusRequest body, CancellationToken ct)
+        => (await mediator.Send(new ChangeBookingStatusCommand(id, body.Status), ct)).ToActionResult();
+
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id, CancellationToken ct)
         => (await mediator.Send(new DeleteBookingCommand(id), ct)).ToNoContentResult();
 }
+
+public record ChangeBookingStatusRequest(BookingStatus Status);

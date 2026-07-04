@@ -13,6 +13,9 @@ internal static class BookingMappings
         CheckIn = b.DateFrom.ToDateTime(TimeOnly.MinValue),
         CheckOut = b.DateTo.ToDateTime(TimeOnly.MinValue),
         Guests = b.BookingRoomVariants.Sum(brv => brv.Quantity),
-        TotalPrice = b.AmountToPay
+        TotalPrice = b.AmountToPay,
+        Status = b.Status.ToString(),
+        CancelledAtUtc = b.CancelledAtUtc,
+        ConfirmedAtUtc = b.ConfirmedAtUtc
     };
 }

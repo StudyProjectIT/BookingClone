@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Identity;
+using Domain.Enums;
 
 namespace Domain.Entities;
 
@@ -14,6 +15,12 @@ public class Booking {
 	public DateTimeOffset EstimatedTimeOfArrivalUtc { get; set; }
 
 	public decimal AmountToPay { get; set; }
+
+	public BookingStatus Status { get; set; } = BookingStatus.Pending;
+
+	public DateTimeOffset? CancelledAtUtc { get; set; }
+
+	public DateTimeOffset? ConfirmedAtUtc { get; set; }
 
 	public long CustomerId { get; set; }
 	public Customer Customer { get; set; } = null!;

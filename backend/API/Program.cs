@@ -35,7 +35,6 @@ try
 
     var jwtKey = builder.Configuration["Jwt:Key"]
         ?? throw new InvalidOperationException("Jwt:Key is not configured");
-    Console.WriteLine("---------"+builder.Configuration["Jwt:Key"]);
 
     builder.Services.AddAuthentication(options =>
     {
@@ -48,10 +47,10 @@ try
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-                ValidateIssuer = false,
-                //ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                ValidateAudience = false,
-                //ValidAudience = builder.Configuration["Jwt:Audience"],
+                ValidateIssuer = true,
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidateAudience = true,
+                ValidAudience = builder.Configuration["Jwt:Audience"],
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
             };
