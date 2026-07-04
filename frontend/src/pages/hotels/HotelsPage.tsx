@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
 import { hotelApi, HotelCard } from '@entities/hotel';
+import type { Hotel } from '@shared/types';
 
 export function HotelsPage() {
-  const [hotels, setHotels] = useState([]);
-  const [error, setError] = useState(null);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     hotelApi.getAll()
       .then(setHotels)
-      .catch((err) => setError(err.response?.data?.error ?? err.message))
+      .catch((err: unknown) => {
+        const axiosErr = err as { response?: { data?: { error?: string } }; message?: string };
+        setError(axiosErr.response?.data?.error ?? axiosErr.message ?? 'Failed to load hotels');
+      })
       .finally(() => setLoading(false));
   }, []);
 

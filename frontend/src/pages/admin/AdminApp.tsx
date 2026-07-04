@@ -44,7 +44,7 @@ export function AdminApp() {
             meta: { label: 'Bookings' },
           },
         ]}
-        options={{ syncWithLocation: true, useNewQueryKeys: true }}
+        options={{ syncWithLocation: true }}
       >
         <Routes>
           <Route path="login" element={<AuthPage type="login" />} />

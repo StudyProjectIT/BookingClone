@@ -1,12 +1,25 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 import { tokenStorage, refreshTokenStorage, userStorage } from '@shared/lib/tokenStorage';
+import type { User } from '@shared/types';
 import { userApi } from '@entities/user';
 import { authApi } from '../api/authApi';
+import type { LoginDto, RegisterDto, UpdateProfileDto } from '../api/authApi';
 
-const AuthContext = createContext(null);
+interface AuthContextValue {
+  user: User | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  login: (dto: LoginDto) => Promise<void>;
+  register: (dto: RegisterDto) => Promise<void>;
+  updateProfile: (dto: UpdateProfileDto) => Promise<void>;
+  logout: () => void;
+}
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => userStorage.get());
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(() => userStorage.get());
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -24,7 +37,6 @@ export function AuthProvider({ children }) {
         })
         .finally(() => setLoading(false));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -33,24 +45,24 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('auth:logout', handler);
   }, []);
 
-  const applyAuthResponse = (data) => {
+  const applyAuthResponse = (data: { token: string; refreshToken: string; user: User }) => {
     tokenStorage.set(data.token);
     refreshTokenStorage.set(data.refreshToken);
     userStorage.set(data.user);
     setUser(data.user);
   };
 
-  const login = async (dto) => {
+  const login = async (dto: LoginDto) => {
     const data = await authApi.login(dto);
     applyAuthResponse(data);
   };
 
-  const register = async (dto) => {
+  const register = async (dto: RegisterDto) => {
     const data = await authApi.register(dto);
     applyAuthResponse(data);
   };
 
-  const updateProfile = async (dto) => {
+  const updateProfile = async (dto: UpdateProfileDto) => {
     const data = await authApi.updateProfile(dto);
     applyAuthResponse(data);
   };
@@ -60,15 +72,16 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const value = useMemo(
+  const value = useMemo<AuthContextValue>(
     () => ({ user, isAuthenticated: !!user, loading, login, register, updateProfile, logout }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, loading],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
+export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>');
   return ctx;

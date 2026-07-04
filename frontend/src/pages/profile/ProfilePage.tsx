@@ -1,0 +1,19 @@
+import { useNavigate, Navigate } from 'react-router-dom';
+import { useAuth, ProfileForm } from '@features/auth';
+
+export function ProfilePage() {
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+
+  return (
+    <section style={{ padding: 24, maxWidth: 480, margin: '0 auto' }}>
+      <h1 style={{ marginBottom: 4 }}>Profile</h1>
+      <p style={{ marginBottom: 24, color: 'var(--text)' }}>
+        {user!.roles.join(', ')}
+      </p>
+      <ProfileForm onSuccess={() => navigate('/profile')} />
+    </section>
+  );
+}

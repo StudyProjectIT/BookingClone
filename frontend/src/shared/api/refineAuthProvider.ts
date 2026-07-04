@@ -1,10 +1,12 @@
+import type { AuthProvider } from '@refinedev/core';
 import { tokenStorage, userStorage } from '@shared/lib/tokenStorage';
 import { httpClient } from './httpClient';
+import type { AuthResponse } from '@shared/types';
 
-export const authProvider = {
-  login: async ({ email, password }) => {
+export const authProvider: AuthProvider = {
+  login: async ({ email, password }: { email: string; password: string }) => {
     try {
-      const { data } = await httpClient.post('/auth/login', {
+      const { data } = await httpClient.post<AuthResponse>('/auth/login', {
         emailOrUserName: email,
         password,
       });
@@ -54,8 +56,11 @@ export const authProvider = {
     };
   },
 
-  onError: async (error) => {
-    if (error?.response?.status === 401) return { logout: true };
-    return { error };
+  onError: async (error: unknown) => {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const e = error as { response?: { status?: number } };
+      if (e.response?.status === 401) return { logout: true };
+    }
+    return { error: error as Error };
   },
 };

@@ -1,21 +1,28 @@
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useAuth } from '../model/AuthContext';
+import type { LoginDto } from '../api/authApi';
 
-export function LoginForm({ onSuccess }) {
+interface Props {
+  onSuccess?: () => void;
+}
+
+export function LoginForm({ onSuccess }: Props) {
   const { login } = useAuth();
-  const [form, setForm] = useState({ emailOrUserName: '', password: '' });
-  const [error, setError] = useState(null);
+  const [form, setForm] = useState<LoginDto>({ emailOrUserName: '', password: '' });
+  const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setBusy(true);
     try {
       await login(form);
       onSuccess?.();
-    } catch (err) {
-      setError(err.response?.data?.error ?? 'Login failed');
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string } } };
+      setError(axiosErr.response?.data?.error ?? 'Login failed');
     } finally {
       setBusy(false);
     }
@@ -38,7 +45,7 @@ export function LoginForm({ onSuccess }) {
         required
       />
       {error && <div style={{ color: 'crimson' }}>{error}</div>}
-      <button type="submit" disabled={busy}>{busy ? '...' : 'Sign in'}</button>
+      <button type="submit" disabled={busy}>{busy ? '…' : 'Sign in'}</button>
     </form>
   );
 }

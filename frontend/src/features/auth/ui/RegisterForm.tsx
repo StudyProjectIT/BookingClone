@@ -1,35 +1,43 @@
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useAuth } from '../model/AuthContext';
+import type { RegisterDto } from '../api/authApi';
 
-const initial = { email: '', userName: '', password: '', firstName: '', lastName: '' };
+interface Props {
+  onSuccess?: () => void;
+}
 
-export function RegisterForm({ onSuccess }) {
+const initial: RegisterDto = { email: '', userName: '', password: '', firstName: '', lastName: '' };
+
+export function RegisterForm({ onSuccess }: Props) {
   const { register } = useAuth();
-  const [form, setForm] = useState(initial);
-  const [error, setError] = useState(null);
+  const [form, setForm] = useState<RegisterDto>(initial);
+  const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setBusy(true);
     try {
       await register(form);
       onSuccess?.();
-    } catch (err) {
-      const d = err.response?.data;
-      const message =
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string; errors?: string[]; title?: string } } };
+      const d = axiosErr.response?.data;
+      setError(
         d?.error ??
         (Array.isArray(d?.errors) ? d.errors.join('; ') : null) ??
         d?.title ??
-        'Registration failed';
-      setError(message);
+        'Registration failed',
+      );
     } finally {
       setBusy(false);
     }
   };
 
-  const upd = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+  const upd = (k: keyof RegisterDto) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm({ ...form, [k]: e.target.value });
 
   return (
     <form onSubmit={onSubmit} style={{ display: 'grid', gap: 8, maxWidth: 320 }}>
@@ -40,7 +48,7 @@ export function RegisterForm({ onSuccess }) {
       <input placeholder="Last name" value={form.lastName} onChange={upd('lastName')} required maxLength={100} />
       <input placeholder="Password" type="password" value={form.password} onChange={upd('password')} required minLength={8} />
       {error && <div style={{ color: 'crimson' }}>{error}</div>}
-      <button type="submit" disabled={busy}>{busy ? '...' : 'Register'}</button>
+      <button type="submit" disabled={busy}>{busy ? '…' : 'Register'}</button>
     </form>
   );
 }
