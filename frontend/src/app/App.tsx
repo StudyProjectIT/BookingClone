@@ -6,6 +6,10 @@ import { HotelsPage } from '@pages/hotels';
 import { LoginPage } from '@pages/login';
 import { RegisterPage } from '@pages/register';
 import { ProfilePage } from '@pages/profile';
+import { ConfirmEmailPage } from '@pages/confirm-email';
+import { ForgotPasswordPage } from '@pages/forgot-password';
+import { ResetPasswordPage } from '@pages/reset-password';
+import { ResendConfirmationPage } from '@pages/resend-confirmation';
 import { AdminApp } from '@pages/admin';
 import { Page404 } from '@pages/Page404';
 
@@ -25,6 +29,10 @@ export default function App() {
                   <Route path="/hotels" element={<HotelsPage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/confirm-email" element={<ConfirmEmailPage />} />
+                  <Route path="/resend-confirmation" element={<ResendConfirmationPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="*" element={<Page404 />} />
                 </Routes>

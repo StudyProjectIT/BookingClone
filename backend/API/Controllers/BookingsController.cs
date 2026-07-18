@@ -6,6 +6,7 @@ using Application.Features.Bookings.Commands.CreateBooking;
 using Application.Features.Bookings.Commands.DeleteBooking;
 using Application.Features.Bookings.Commands.UpdateBooking;
 using Application.Features.Bookings.Queries.GetAllBookings;
+using Application.Features.Bookings.Queries.GetAllBookingsAdmin;
 using Application.Features.Bookings.Queries.GetBookingById;
 using Application.Features.Bookings.Queries.GetBookingsByHotelId;
 using Domain.Constants;
@@ -30,6 +31,11 @@ public class BookingsController(IMediator mediator) : ControllerBase
 
         return (await mediator.Send(new GetAllBookingsQuery(customerId, page, pageSize), ct)).ToActionResult();
     }
+
+    [HttpGet("admin/all")]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> GetAllAdmin([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
+        => (await mediator.Send(new GetAllBookingsAdminQuery(page, pageSize), ct)).ToActionResult();
 
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id, CancellationToken ct)
