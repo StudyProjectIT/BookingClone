@@ -4,7 +4,7 @@ import { useAuth } from '../model/AuthContext';
 import type { RegisterDto } from '../api/authApi';
 
 interface Props {
-  onSuccess?: () => void;
+  onSuccess?: (message: string) => void;
 }
 
 const initial: RegisterDto = { email: '', userName: '', password: '', firstName: '', lastName: '' };
@@ -20,8 +20,8 @@ export function RegisterForm({ onSuccess }: Props) {
     setError(null);
     setBusy(true);
     try {
-      await register(form);
-      onSuccess?.();
+      const message = await register(form);
+      onSuccess?.(message);
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { error?: string; errors?: string[]; title?: string } } };
       const d = axiosErr.response?.data;

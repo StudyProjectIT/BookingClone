@@ -6,6 +6,7 @@ public interface IBookingRepository
 {
     Task<IReadOnlyList<Booking>> GetAllAsync(CancellationToken ct = default);
     Task<IReadOnlyList<Booking>> GetByCustomerIdAsync(long customerId, CancellationToken ct = default);
+    Task<(IReadOnlyList<Booking> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, CancellationToken ct = default);
     Task<(IReadOnlyList<Booking> Items, int TotalCount)> GetPagedByCustomerIdAsync(long customerId, int page, int pageSize, CancellationToken ct = default);
     Task<IReadOnlyList<Booking>> GetByHotelIdAsync(long hotelId, CancellationToken ct = default);
     Task<Booking?> GetByIdAsync(long id, CancellationToken ct = default);

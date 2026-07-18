@@ -29,6 +29,9 @@ public class LoginHandler(
         if (!check.Succeeded)
             return Error.Unauthorized("Invalid credentials.");
 
+        if (!user.EmailConfirmed)
+            return Error.Unauthorized("Email not confirmed. Please check your inbox.");
+
         var roles = await userManager.GetRolesAsync(user);
         var (token, expiresAt) = tokenService.CreateToken(user, roles);
         var refreshTokenValue = tokenService.GenerateRefreshToken();

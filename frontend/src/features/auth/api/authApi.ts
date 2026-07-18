@@ -22,12 +22,24 @@ export interface UpdateProfileDto {
 }
 
 export const authApi = {
-  register: (dto: RegisterDto): Promise<AuthResponse> =>
-    httpClient.post<AuthResponse>('/auth/register', dto).then((r) => r.data),
+  register: (dto: RegisterDto): Promise<string> =>
+    httpClient.post<string>('/auth/register', dto).then((r) => r.data),
 
   login: (dto: LoginDto): Promise<AuthResponse> =>
     httpClient.post<AuthResponse>('/auth/login', dto).then((r) => r.data),
 
   updateProfile: (dto: UpdateProfileDto): Promise<AuthResponse> =>
     httpClient.patch<AuthResponse>('/auth/profile', dto).then((r) => r.data),
+
+  confirmEmail: (userId: number, token: string): Promise<string> =>
+    httpClient.post<string>('/auth/confirm-email', { userId, token }).then((r) => r.data),
+
+  resendConfirmation: (email: string): Promise<string> =>
+    httpClient.post<string>('/auth/resend-confirmation', { email }).then((r) => r.data),
+
+  forgotPassword: (email: string): Promise<string> =>
+    httpClient.post<string>('/auth/forgot-password', { email }).then((r) => r.data),
+
+  resetPassword: (email: string, token: string, newPassword: string): Promise<string> =>
+    httpClient.post<string>('/auth/reset-password', { email, token, newPassword }).then((r) => r.data),
 };

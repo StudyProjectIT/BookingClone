@@ -11,7 +11,7 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   loading: boolean;
   login: (dto: LoginDto) => Promise<void>;
-  register: (dto: RegisterDto) => Promise<void>;
+  register: (dto: RegisterDto) => Promise<string>;
   updateProfile: (dto: UpdateProfileDto) => Promise<void>;
   logout: () => void;
 }
@@ -57,9 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     applyAuthResponse(data);
   };
 
-  const register = async (dto: RegisterDto) => {
-    const data = await authApi.register(dto);
-    applyAuthResponse(data);
+  const register = async (dto: RegisterDto): Promise<string> => {
+    return await authApi.register(dto);
   };
 
   const updateProfile = async (dto: UpdateProfileDto) => {

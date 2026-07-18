@@ -1,9 +1,13 @@
 using System.Security.Claims;
 using API.Common;
 using Application.DTOs.Auth;
+using Application.Features.Auth.Commands.ConfirmEmail;
+using Application.Features.Auth.Commands.ForgotPassword;
 using Application.Features.Auth.Commands.Login;
 using Application.Features.Auth.Commands.RefreshToken;
 using Application.Features.Auth.Commands.Register;
+using Application.Features.Auth.Commands.ResendConfirmationEmail;
+using Application.Features.Auth.Commands.ResetPassword;
 using Application.Features.Auth.Commands.RevokeToken;
 using Application.Features.Auth.Commands.UpdateProfile;
 using Application.Features.Auth.Queries.GetCurrentUser;
@@ -58,6 +62,29 @@ public class AuthController(IMediator mediator) : ControllerBase
 
         return (await mediator.Send(new UpdateProfileCommand(userId, dto), ct)).ToActionResult();
     }
+
+    [HttpPost("confirm-email")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken ct)
+        => (await mediator.Send(new ConfirmEmailCommand(request.UserId, request.Token), ct)).ToActionResult();
+
+    [HttpPost("resend-confirmation")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResendConfirmation([FromBody] EmailRequest request, CancellationToken ct)
+        => (await mediator.Send(new ResendConfirmationEmailCommand(request.Email), ct)).ToActionResult();
+
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ForgotPassword([FromBody] EmailRequest request, CancellationToken ct)
+        => (await mediator.Send(new ForgotPasswordCommand(request.Email), ct)).ToActionResult();
+
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken ct)
+        => (await mediator.Send(new ResetPasswordCommand(request.Email, request.Token, request.NewPassword), ct)).ToActionResult();
 }
 
 public record RefreshTokenRequest(string Token);
+public record ConfirmEmailRequest(long UserId, string Token);
+public record EmailRequest(string Email);
+public record ResetPasswordRequest(string Email, string Token, string NewPassword);

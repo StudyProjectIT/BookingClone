@@ -5,6 +5,9 @@ export const hotelApi = {
   getAll: (params?: { page?: number; pageSize?: number; name?: string; categoryId?: number; city?: string }): Promise<Hotel[]> =>
     httpClient.get<PagedResult<Hotel>>('/hotels', { params }).then((r) => r.data.items ?? (r.data as unknown as Hotel[])),
 
+  getAllPaged: (params?: { page?: number; pageSize?: number; name?: string; categoryId?: number; city?: string }): Promise<PagedResult<Hotel>> =>
+    httpClient.get<PagedResult<Hotel>>('/hotels', { params }).then((r) => r.data),
+
   getById: (id: number): Promise<Hotel> =>
     httpClient.get<Hotel>(`/hotels/${id}`).then((r) => r.data),
 

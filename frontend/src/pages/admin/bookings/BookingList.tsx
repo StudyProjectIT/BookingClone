@@ -10,7 +10,7 @@ const statusColor: Record<BookingStatus, string> = {
 };
 
 export function BookingList() {
-  const { tableProps } = useTable({ syncWithLocation: true });
+  const { tableProps } = useTable({ syncWithLocation: true, resource: 'bookings/admin/all' });
 
   return (
     <List canCreate={false}>

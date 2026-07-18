@@ -7,13 +7,16 @@ using Domain.Interfaces;
 using RefreshTokenEntity = Domain.Entities.Identity.RefreshToken;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Features.Auth.Commands.Register;
 
 public class RegisterHandler(
     UserManager<AppUser> userManager,
     ITokenService tokenService,
-    IRefreshTokenRepository refreshTokenRepository) : IRequestHandler<RegisterCommand, Result<AuthResponseDto>>
+    IRefreshTokenRepository refreshTokenRepository,
+    IEmailService emailService,
+    IConfiguration configuration) : IRequestHandler<RegisterCommand, Result<AuthResponseDto>>
 {
     public async Task<Result<AuthResponseDto>> Handle(RegisterCommand request, CancellationToken ct)
     {
@@ -41,6 +44,20 @@ public class RegisterHandler(
         var roleResult = await userManager.AddToRoleAsync(user, Roles.Customer);
         if (!roleResult.Succeeded)
             return Error.Unexpected(string.Join("; ", roleResult.Errors.Select(e => e.Description)));
+
+        var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        var frontendUrl = configuration["Frontend:Url"] ?? "http://localhost:5173";
+        var link = $"{frontendUrl}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(confirmationToken)}";
+
+        await emailService.SendAsync(
+            dto.Email,
+            "Confirm your email – BookingClone",
+            $"""
+             <p>Hi {user.FirstName},</p>
+             <p>Welcome to BookingClone! Please <a href="{link}">confirm your email address</a> to keep access to your account.</p>
+             <p>If you did not register, you can ignore this email.</p>
+             """,
+            ct);
 
         var roles = await userManager.GetRolesAsync(user);
         var (token, expiresAt) = tokenService.CreateToken(user, roles);
